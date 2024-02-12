@@ -1,6 +1,6 @@
 package Mudor.services;
 
-import Mudor.DTO.CrossArtistaSingoloDTO;
+import Mudor.entity.CrossArtistaSingolo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,13 +8,13 @@ import java.util.List;
 @Service
 public interface CrossArtistaSingoloService {
 
-    List<CrossArtistaSingoloDTO> getAllRelations();
+    List<CrossArtistaSingolo> getAllRelations();
 
-    CrossArtistaSingoloDTO getRelation(Integer id);
+    CrossArtistaSingolo getRelation(Integer id);
 
-    void addRelation(CrossArtistaSingoloDTO crossArtistaSingoloDTO);
+    void addRelation(CrossArtistaSingolo crossArtistaSingolo);
 
-    void updateRelation(CrossArtistaSingoloDTO crossArtistaSingoloDTO, Integer id);
+    void updateRelation(CrossArtistaSingolo crossArtistaSingolo, Integer id);
 
     void deleteRelation(Integer id);
 }

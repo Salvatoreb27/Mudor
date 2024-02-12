@@ -23,11 +23,11 @@ public class ArtistaMusicaleDTO {
 
     private String paeseDOrigine;
 
-    private List<AlbumInStudioDTO> albumInStudioDTOS = new ArrayList<>();
+    private List<AlbumInStudioDTO> albumsInStudioDTOS = new ArrayList<>();
 
-    private List<AlbumLiveDTO> albumLiveDTOS = new ArrayList<>();
+    private List<AlbumLiveDTO> albumsLiveDTOS = new ArrayList<>();
 
     private List<RaccoltaDTO> raccoltaDTOS = new ArrayList<>();
 
-    private List<CrossArtistaSingoloDTO> crossArtistaSingoloDTOS = new ArrayList<>();
+    private List<String> singoli = new ArrayList<>();
 }

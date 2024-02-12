@@ -23,5 +23,5 @@ public class AlbumLiveDTO {
 
     private List <String>  generi;
 
-    private ArtistaMusicaleDTO artistaMusicaleDTO;
+    private Integer idArtistaMusicale;
 }

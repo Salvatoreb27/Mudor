@@ -1,28 +1,28 @@
 package Mudor.servicesimpl;
 
-import Mudor.DTO.CrossArtistaSingoloDTO;
+import Mudor.entity.CrossArtistaSingolo;
 import Mudor.services.CrossArtistaSingoloService;
 
 import java.util.List;
 
 public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloService {
     @Override
-    public List<CrossArtistaSingoloDTO> getAllRelations() {
+    public List<CrossArtistaSingolo> getAllRelations() {
         return null;
     }
 
     @Override
-    public CrossArtistaSingoloDTO getRelation(Integer id) {
+    public CrossArtistaSingolo getRelation(Integer id) {
         return null;
     }
 
     @Override
-    public void addRelation(CrossArtistaSingoloDTO crossArtistaSingoloDTO) {
+    public void addRelation(CrossArtistaSingolo crossArtistaSingolo) {
 
     }
 
     @Override
-    public void updateRelation(CrossArtistaSingoloDTO crossArtistaSingoloDTO, Integer id) {
+    public void updateRelation(CrossArtistaSingolo crossArtistaSingolo, Integer id) {
 
     }
 

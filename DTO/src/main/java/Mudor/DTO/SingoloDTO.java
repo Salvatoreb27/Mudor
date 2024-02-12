@@ -23,5 +23,5 @@ public class SingoloDTO {
 
     private List<String> generi;
 
-    private List<CrossArtistaSingoloDTO> crossArtistaSingoloDTOs = new ArrayList<>();
+    private List<String> artisti = new ArrayList<>();
 }
