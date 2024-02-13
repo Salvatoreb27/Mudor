@@ -49,7 +49,7 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
                 .dataRilascio(albumLiveDTO.getDataRilascio())
                 .brani(albumLiveDTO.getBrani())
                 .generi(albumLiveDTO.getGeneri())
-                .artistaMusicale(artistaMusicaleService.getArtistaMusicale(albumLiveDTO.getIdArtistaMusicale()))
+                .artistaMusicale(artistaMusicaleService.getArtistaMusicaleById(albumLiveDTO.getIdArtistaMusicale()))
                 .build();
         return null;
     }
@@ -63,7 +63,7 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
 
     @Override
     public List<AlbumLiveDTO> getAlbumsLive() {
-        List<AlbumLive> albumLiveList = new ArrayList<>();
+        List<AlbumLive> albumLiveList = new ArrayList<>(albumLiveRepository.findAll());
         return mapTOAlbumLiveDTOList(albumLiveList);
     }
 
@@ -86,13 +86,14 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
 
     @Override
     public void updateAlbumLive(AlbumLiveDTO albumLiveDTO, Integer id) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicale(albumLiveDTO.getIdArtistaMusicale());
+        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(albumLiveDTO.getIdArtistaMusicale());
         AlbumLive albumLiveRicercato = albumLiveRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album live ricercato non è presente"));
         albumLiveRicercato.setTitoloAlbumLive(albumLiveDTO.getTitoloAlbumLive());
         albumLiveRicercato.setDataRilascio(albumLiveDTO.getDataRilascio());
         albumLiveRicercato.setGeneri(albumLiveDTO.getGeneri());
         albumLiveRicercato.setBrani(albumLiveDTO.getBrani());
         albumLiveRicercato.setArtistaMusicale(artistaMusicale);
+        albumLiveRepository.save(albumLiveRicercato);
     }
 
     @Override

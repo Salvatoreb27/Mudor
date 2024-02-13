@@ -49,7 +49,7 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
                 .dataRilascio(albumInStudioDTO.getDataRilascio())
                 .brani(albumInStudioDTO.getBrani())
                 .generi(albumInStudioDTO.getGeneri())
-                .artistaMusicale(artistaMusicaleService.getArtistaMusicale(albumInStudioDTO.getIdArtistaMusicale()))
+                .artistaMusicale(artistaMusicaleService.getArtistaMusicaleById(albumInStudioDTO.getIdArtistaMusicale()))
                 .build();
         return null;
     }
@@ -64,7 +64,7 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
 
     @Override
     public List<AlbumInStudioDTO> getAlbumsInStudio() {
-        List<AlbumInStudio> albumInStudioList = new ArrayList<>();
+        List<AlbumInStudio> albumInStudioList = new ArrayList<>(albumInStudioRepository.findAll());
         return mapTOAlbumInStudioDTOList(albumInStudioList);
     }
 
@@ -86,13 +86,14 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
 
     @Override
     public void updateAlbumInStudio(AlbumInStudioDTO albumInStudioDTO, Integer id) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicale(albumInStudioDTO.getIdArtistaMusicale());
+        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(albumInStudioDTO.getIdArtistaMusicale());
         AlbumInStudio albumInStudioRicercato = albumInStudioRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album in studio ricercato non è presente"));
         albumInStudioRicercato.setTitoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio());
         albumInStudioRicercato.setDataRilascio(albumInStudioDTO.getDataRilascio());
         albumInStudioRicercato.setGeneri(albumInStudioDTO.getGeneri());
         albumInStudioRicercato.setBrani(albumInStudioDTO.getBrani());
         albumInStudioRicercato.setArtistaMusicale(artistaMusicale);
+        albumInStudioRepository.save(albumInStudioRicercato);
     }
 
     @Override

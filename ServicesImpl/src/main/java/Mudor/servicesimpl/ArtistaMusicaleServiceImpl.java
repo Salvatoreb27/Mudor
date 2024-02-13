@@ -78,7 +78,7 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
 
     @Override
     public List<ArtistaMusicaleDTO> getArtistiMusicali() {
-        List<ArtistaMusicale> artisti = new ArrayList<>();
+        List<ArtistaMusicale> artisti = new ArrayList<>(artistaMusicaleRepository.findAll());
         return mapTOArtistaMusicaleDTOList(artisti);
     }
 
@@ -94,8 +94,18 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
     }
 
     @Override
-    public ArtistaMusicale getArtistaMusicale(Integer id) {
+    public ArtistaMusicale getArtistaMusicaleById(Integer id) {
         Optional<ArtistaMusicale> artistaMusicale = artistaMusicaleRepository.findById(id);
+        if (artistaMusicale.isPresent()) {
+            return artistaMusicale.get();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ArtistaMusicale getArtistaMusicaleByNome(String nome) {
+        Optional<ArtistaMusicale> artistaMusicale = artistaMusicaleRepository.findByNomeArtistaMusicale(nome);
         if (artistaMusicale.isPresent()) {
             return artistaMusicale.get();
         } else {
@@ -124,6 +134,7 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
         artistaMusicaleRicercato.setAlbumsLive(albumLiveList);
         artistaMusicaleRicercato.setCrossArtistaSingolos(crossArtistaSingoloList);
         artistaMusicaleRicercato.setRaccolte(raccoltaList);
+        artistaMusicaleRepository.save(artistaMusicaleRicercato);
     }
 
 

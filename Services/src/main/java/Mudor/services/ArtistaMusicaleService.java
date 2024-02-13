@@ -1,12 +1,11 @@
 package Mudor.services;
 
-import Mudor.DTO.AlbumLiveDTO;
 import Mudor.DTO.ArtistaMusicaleDTO;
-import Mudor.entity.AlbumLive;
 import Mudor.entity.ArtistaMusicale;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface ArtistaMusicaleService {
@@ -15,7 +14,8 @@ public interface ArtistaMusicaleService {
     ArtistaMusicale mapToArtistaMusicale(ArtistaMusicaleDTO artistaMusicaleDTO);
     List<ArtistaMusicale> mapTOArtistaMusicaleList(List<ArtistaMusicaleDTO> artistaMusicaleDTOList);
     List<ArtistaMusicaleDTO> getArtistiMusicali();
-    ArtistaMusicale getArtistaMusicale(Integer id);
+    ArtistaMusicale getArtistaMusicaleById(Integer id);
+    ArtistaMusicale getArtistaMusicaleByNome(String nome);
     ArtistaMusicaleDTO getArtistaMusicaleDTO(Integer id);
     void addArtistaMusicale(ArtistaMusicaleDTO artistaMusicaleDTO);
 

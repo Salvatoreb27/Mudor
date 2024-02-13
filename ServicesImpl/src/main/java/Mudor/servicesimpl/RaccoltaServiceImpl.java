@@ -49,7 +49,7 @@ public class RaccoltaServiceImpl implements RaccoltaService {
                 .dataRilascio(raccoltaDTO.getDataRilascio())
                 .brani(raccoltaDTO.getBrani())
                 .generi(raccoltaDTO.getGeneri())
-                .artistaMusicale(artistaMusicaleService.getArtistaMusicale(raccoltaDTO.getIdArtistaMusicale()))
+                .artistaMusicale(artistaMusicaleService.getArtistaMusicaleById(raccoltaDTO.getIdArtistaMusicale()))
                 .build();
         return null;
     }
@@ -63,7 +63,7 @@ public class RaccoltaServiceImpl implements RaccoltaService {
 
     @Override
     public List<RaccoltaDTO> getRaccolte() {
-        List<Raccolta> raccoltaList = new ArrayList<>();
+        List<Raccolta> raccoltaList = new ArrayList<>(raccoltaRepository.findAll());
         return mapTORaccoltaDTOList(raccoltaList);
     }
 
@@ -86,13 +86,14 @@ public class RaccoltaServiceImpl implements RaccoltaService {
 
     @Override
     public void updateRaccolta(RaccoltaDTO raccoltaDTO, Integer id) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicale(raccoltaDTO.getIdArtistaMusicale());
+        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(raccoltaDTO.getIdArtistaMusicale());
         Raccolta raccoltaRicercata = raccoltaRepository.findById(id).orElseThrow(() -> new RuntimeException("La raccolta ricercata non è presente"));
         raccoltaRicercata.setTitoloRaccolta(raccoltaDTO.getTitoloRaccolta());
         raccoltaRicercata.setDataRilascio(raccoltaDTO.getDataRilascio());
         raccoltaRicercata.setGeneri(raccoltaDTO.getGeneri());
         raccoltaRicercata.setBrani(raccoltaDTO.getBrani());
         raccoltaRicercata.setArtistaMusicale(artistaMusicale);
+        raccoltaRepository.save(raccoltaRicercata);
     }
 
     @Override
