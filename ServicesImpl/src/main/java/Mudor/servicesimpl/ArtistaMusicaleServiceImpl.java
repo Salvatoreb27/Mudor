@@ -84,7 +84,13 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
 
     @Override
     public ArtistaMusicaleDTO getArtistaMusicaleDTO(Integer id) {
-        return null;
+        Optional<ArtistaMusicale> artistaMusicale = artistaMusicaleRepository.findById(id);
+        if (artistaMusicale.isPresent()){
+            return mapTOArtistaMusicaleDTO(artistaMusicale.get());
+        } else {
+            return null;
+        }
+
     }
 
     @Override

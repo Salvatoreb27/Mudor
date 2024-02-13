@@ -1,17 +1,19 @@
 package Mudor.servicesimpl;
 
 import Mudor.DTO.AlbumInStudioDTO;
-import Mudor.entity.AlbumInStudio;
+import Mudor.DTO.ArtistaMusicaleDTO;
+import Mudor.entity.*;
 import Mudor.repository.AlbumInStudioRepository;
 import Mudor.services.AlbumInStudioService;
 import Mudor.services.ArtistaMusicaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 
 @Service
@@ -20,6 +22,7 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
     private AlbumInStudioRepository albumInStudioRepository;
     @Autowired
     private ArtistaMusicaleService artistaMusicaleService;
+
     @Override
     public AlbumInStudioDTO mapTOAlbumInStudioDTO(AlbumInStudio albumInStudio) {
         AlbumInStudioDTO albumInStudioDTO = AlbumInStudioDTO.builder()
@@ -61,26 +64,42 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
 
     @Override
     public List<AlbumInStudioDTO> getAlbumsInStudio() {
-        return null;
+        List<AlbumInStudio> albumInStudioList = new ArrayList<>();
+        return mapTOAlbumInStudioDTOList(albumInStudioList);
     }
 
     @Override
     public AlbumInStudioDTO getAlbumInStudio(Integer id) {
-        return null;
+        Optional<AlbumInStudio> albumInStudio = albumInStudioRepository.findById(id);
+        if (albumInStudio.isPresent()) {
+            return mapTOAlbumInStudioDTO(albumInStudio.get());
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void addAlbumInStudio(AlbumInStudioDTO albumInStudioDTO) {
-
+        AlbumInStudio albumInStudio = mapToAlbumInStudio(albumInStudioDTO);
+        albumInStudioRepository.save(albumInStudio);
     }
 
     @Override
     public void updateAlbumInStudio(AlbumInStudioDTO albumInStudioDTO, Integer id) {
-
+        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicale(id);
+        AlbumInStudio albumInStudioRicercato = albumInStudioRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album in studio ricercato non è presente"));
+        albumInStudioRicercato.setTitoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio());
+        albumInStudioRicercato.setDataRilascio(albumInStudioDTO.getDataRilascio());
+        albumInStudioRicercato.setGeneri(albumInStudioDTO.getGeneri());
+        albumInStudioRicercato.setBrani(albumInStudioDTO.getBrani());
+        albumInStudioRicercato.setArtistaMusicale(artistaMusicale);
     }
 
     @Override
     public void deleteAlbumInStudio(Integer id) {
-
+        if (albumInStudioRepository.existsById(id)) {
+            albumInStudioRepository.deleteById(id);
+        }
     }
+
 }
