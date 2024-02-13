@@ -20,7 +20,6 @@ public class SingoloServiceImpl implements SingoloService {
     public void addSingolo(SingoloDTO artistaMusicaleDTO) {
 
     }
-
     @Override
     public void updateSingolo(SingoloDTO singoloDTO, Integer id) {
 

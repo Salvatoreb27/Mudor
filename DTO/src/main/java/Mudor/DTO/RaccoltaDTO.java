@@ -23,5 +23,5 @@ public class RaccoltaDTO {
 
     private List <String>  generi;
 
-    private Integer artistaMusicaleId;
+    private Integer idArtistaMusicale;
 }

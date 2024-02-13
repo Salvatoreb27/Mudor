@@ -12,6 +12,8 @@ public interface SingoloService {
 
     SingoloDTO getSingolo(Integer id);
 
+
+
     void addSingolo(SingoloDTO artistaMusicaleDTO);
 
     void updateSingolo(SingoloDTO singoloDTO, Integer id);
