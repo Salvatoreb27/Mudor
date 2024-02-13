@@ -1,5 +1,7 @@
 package Mudor.servicesimpl;
 
+import Mudor.DTO.AlbumLiveDTO;
+import Mudor.entity.AlbumLive;
 import Mudor.entity.CrossArtistaSingolo;
 import Mudor.entity.Singolo;
 import Mudor.repository.CrossArtistaSingoloRepository;
@@ -23,6 +25,8 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
     public List<CrossArtistaSingolo> getAllRelations() {
         return null;
     }
+
+
 
     @Override
     public List<CrossArtistaSingolo> getAssociationListByListOfSingoli(List <String> singoli){

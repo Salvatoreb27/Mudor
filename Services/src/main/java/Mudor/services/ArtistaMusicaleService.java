@@ -10,7 +10,6 @@ import java.util.List;
 
 @Service
 public interface ArtistaMusicaleService {
-
     public ArtistaMusicaleDTO mapTOArtistaMusicaleDTO (ArtistaMusicale artistaMusicale);
     List<ArtistaMusicaleDTO> mapTOArtistaMusicaleDTOList(List<ArtistaMusicale> artistaMusicaleList);
     ArtistaMusicale mapToArtistaMusicale(ArtistaMusicaleDTO artistaMusicaleDTO);

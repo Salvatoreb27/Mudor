@@ -3,13 +3,16 @@ package Mudor.servicesimpl;
 import Mudor.DTO.AlbumLiveDTO;
 import Mudor.DTO.RaccoltaDTO;
 import Mudor.entity.AlbumLive;
+import Mudor.entity.ArtistaMusicale;
 import Mudor.entity.Raccolta;
 import Mudor.repository.RaccoltaRepository;
 import Mudor.services.ArtistaMusicaleService;
 import Mudor.services.RaccoltaService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RaccoltaServiceImpl implements RaccoltaService {
@@ -60,25 +63,44 @@ public class RaccoltaServiceImpl implements RaccoltaService {
 
     @Override
     public List<RaccoltaDTO> getRaccolte() {
-        return null;
+        List<Raccolta> raccoltaList = new ArrayList<>();
+        return mapTORaccoltaDTOList(raccoltaList);
     }
 
     @Override
     public RaccoltaDTO getRaccolta(Integer id) {
-        return null;
+        Optional<Raccolta> raccolta = raccoltaRepository.findById(id);
+        if (raccolta.isPresent()) {
+            return mapTORaccoltaDTO(raccolta.get());
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public void addRaccolta(RaccoltaDTO artistaMusicaleDTO) {
-
+    public void addRaccolta(RaccoltaDTO raccoltaDTO) {
+        Raccolta raccolta = mapToRaccolta(raccoltaDTO);
+        raccoltaRepository.save(raccolta);
     }
-    @Override
-    public void updateRaccolta(RaccoltaDTO artistaMusicaleDTO, Integer id) {
 
+
+    @Override
+    public void updateRaccolta(RaccoltaDTO raccoltaDTO, Integer id) {
+        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicale(raccoltaDTO.getIdArtistaMusicale());
+        Raccolta raccoltaRicercata = raccoltaRepository.findById(id).orElseThrow(() -> new RuntimeException("La raccolta ricercata non è presente"));
+        raccoltaRicercata.setTitoloRaccolta(raccoltaDTO.getTitoloRaccolta());
+        raccoltaRicercata.setDataRilascio(raccoltaDTO.getDataRilascio());
+        raccoltaRicercata.setGeneri(raccoltaDTO.getGeneri());
+        raccoltaRicercata.setBrani(raccoltaDTO.getBrani());
+        raccoltaRicercata.setArtistaMusicale(artistaMusicale);
     }
 
     @Override
     public void deleteRaccolta(Integer id) {
-
+        if (raccoltaRepository.existsById(id)) {
+            raccoltaRepository.deleteById(id);
+        }
     }
+
+
 }

@@ -13,8 +13,6 @@ public interface CrossArtistaSingoloService {
     CrossArtistaSingolo getRelation(Integer id);
     List<String> getSingoliByArtistaMusicale(Integer id);
     void addRelation(CrossArtistaSingolo crossArtistaSingolo);
-
     void updateRelation(CrossArtistaSingolo crossArtistaSingolo, Integer id);
-
     void deleteRelation(Integer id);
 }

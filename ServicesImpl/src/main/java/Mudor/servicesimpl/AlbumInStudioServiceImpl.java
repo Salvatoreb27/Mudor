@@ -86,7 +86,7 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
 
     @Override
     public void updateAlbumInStudio(AlbumInStudioDTO albumInStudioDTO, Integer id) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicale(id);
+        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicale(albumInStudioDTO.getIdArtistaMusicale());
         AlbumInStudio albumInStudioRicercato = albumInStudioRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album in studio ricercato non è presente"));
         albumInStudioRicercato.setTitoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio());
         albumInStudioRicercato.setDataRilascio(albumInStudioDTO.getDataRilascio());

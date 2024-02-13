@@ -19,8 +19,6 @@ public interface AlbumLiveService {
     List<AlbumLiveDTO> getAlbumsLive();
     AlbumLiveDTO getAlbumLive(Integer id);
     void addAlbumLive(AlbumLiveDTO albumLiveDTO);
-
     void updateAlbumLive(AlbumLiveDTO albumLiveDTO, Integer id);
-
     void deleteAlbumLive(Integer id);
 }

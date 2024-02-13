@@ -15,12 +15,8 @@ public interface RaccoltaService {
     Raccolta mapToRaccolta(RaccoltaDTO raccoltaDTO);
     List<Raccolta> mapTORaccoltaList(List<RaccoltaDTO> raccoltaDTOList);
     List<RaccoltaDTO> getRaccolte();
-
     RaccoltaDTO getRaccolta(Integer id);
-
     void addRaccolta(RaccoltaDTO artistaMusicaleDTO);
-
     void updateRaccolta(RaccoltaDTO artistaMusicaleDTO, Integer id);
-
     void deleteRaccolta(Integer id);
 }

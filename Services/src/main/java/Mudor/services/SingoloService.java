@@ -9,14 +9,8 @@ import java.util.List;
 @Service
 public interface SingoloService {
     List<SingoloDTO> getSingoli();
-
     SingoloDTO getSingolo(Integer id);
-
-
-
     void addSingolo(SingoloDTO artistaMusicaleDTO);
-
     void updateSingolo(SingoloDTO singoloDTO, Integer id);
-
     void deleteSingolo(Integer id);
 }

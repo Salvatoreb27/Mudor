@@ -17,10 +17,7 @@ public interface AlbumInStudioService {
     List<AlbumInStudio> mapTOAlbumInStudioList(List<AlbumInStudioDTO> albumsInStudioDTOList);
     List<AlbumInStudioDTO> getAlbumsInStudio();
     AlbumInStudioDTO getAlbumInStudio(Integer id);
-
     void addAlbumInStudio(AlbumInStudioDTO albumInStudioDTO);
-
     void updateAlbumInStudio(AlbumInStudioDTO albumInStudioDTO, Integer id);
-
     void deleteAlbumInStudio(Integer id);
 }
