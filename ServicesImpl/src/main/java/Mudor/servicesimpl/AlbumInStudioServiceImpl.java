@@ -23,8 +23,9 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
     @Autowired
     private ArtistaMusicaleService artistaMusicaleService;
 
+
     @Override
-    public AlbumInStudioDTO mapTOAlbumInStudioDTO(AlbumInStudio albumInStudio) {
+    public AlbumInStudioDTO mapTODTO(AlbumInStudio albumInStudio) {
         AlbumInStudioDTO albumInStudioDTO = AlbumInStudioDTO.builder()
                 .titoloAlbumInStudio(albumInStudio.getTitoloAlbumInStudio())
                 .dataRilascio(albumInStudio.getDataRilascio())
@@ -36,14 +37,14 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
     }
 
     @Override
-    public List<AlbumInStudioDTO> mapTOAlbumInStudioDTOList(List<AlbumInStudio> albumsInStudioList) {
-        return albumsInStudioList.stream()
-                .map(this::mapTOAlbumInStudioDTO)
+    public List<AlbumInStudioDTO> mapTODTOList(List<AlbumInStudio> albumInStudioList) {
+        return albumInStudioList.stream()
+                .map((AlbumInStudio albumInStudio) -> this.mapTODTO(albumInStudio))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AlbumInStudio mapToAlbumInStudio(AlbumInStudioDTO albumInStudioDTO) {
+    public AlbumInStudio mapToEntity(AlbumInStudioDTO albumInStudioDTO) {
         AlbumInStudio albumInStudio = AlbumInStudio.builder()
                 .titoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio())
                 .dataRilascio(albumInStudioDTO.getDataRilascio())
@@ -55,37 +56,36 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
     }
 
     @Override
-    public List<AlbumInStudio> mapTOAlbumInStudioList(List<AlbumInStudioDTO> albumsInStudioDTOList) {
-        return albumsInStudioDTOList.stream()
-                .map(this::mapToAlbumInStudio)
+    public List<AlbumInStudio> mapTOEntityList(List<AlbumInStudioDTO> albumInStudioDTOList) {
+        return albumInStudioDTOList.stream()
+                .map((AlbumInStudioDTO albumInStudioDTO) -> this.mapToEntity(albumInStudioDTO))
                 .collect(Collectors.toList());
     }
 
-
     @Override
-    public List<AlbumInStudioDTO> getAlbumsInStudio() {
+    public List<AlbumInStudioDTO> getDTOs() {
         List<AlbumInStudio> albumInStudioList = new ArrayList<>(albumInStudioRepository.findAll());
-        return mapTOAlbumInStudioDTOList(albumInStudioList);
+        return mapTODTOList(albumInStudioList);
     }
 
     @Override
-    public AlbumInStudioDTO getAlbumInStudio(Integer id) {
+    public AlbumInStudioDTO getDTO(Integer id) {
         Optional<AlbumInStudio> albumInStudio = albumInStudioRepository.findById(id);
         if (albumInStudio.isPresent()) {
-            return mapTOAlbumInStudioDTO(albumInStudio.get());
+            return mapTODTO(albumInStudio.get());
         } else {
             return null;
         }
     }
 
     @Override
-    public void addAlbumInStudio(AlbumInStudioDTO albumInStudioDTO) {
-        AlbumInStudio albumInStudio = mapToAlbumInStudio(albumInStudioDTO);
+    public void add(AlbumInStudioDTO albumInStudioDTO) {
+        AlbumInStudio albumInStudio = mapToEntity(albumInStudioDTO);
         albumInStudioRepository.save(albumInStudio);
     }
 
     @Override
-    public void updateAlbumInStudio(AlbumInStudioDTO albumInStudioDTO, Integer id) {
+    public void update(AlbumInStudioDTO albumInStudioDTO, Integer id) {
         ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(albumInStudioDTO.getIdArtistaMusicale());
         AlbumInStudio albumInStudioRicercato = albumInStudioRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album in studio ricercato non è presente"));
         albumInStudioRicercato.setTitoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio());
@@ -97,10 +97,9 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
     }
 
     @Override
-    public void deleteAlbumInStudio(Integer id) {
+    public void delete(Integer id) {
         if (albumInStudioRepository.existsById(id)) {
             albumInStudioRepository.deleteById(id);
         }
     }
-
 }

@@ -25,74 +25,6 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
     @Autowired
     private RaccoltaService raccoltaService;
 
-    public ArtistaMusicaleDTO mapTOArtistaMusicaleDTO(ArtistaMusicale artistaMusicale) {
-        List<AlbumInStudioDTO> albumInStudioDTOList = albumInStudioService.mapTOAlbumInStudioDTOList(artistaMusicale.getAlbumsInStudio());
-        List<AlbumLiveDTO> albumLiveDTOList = albumLiveService.mapTOAlbumLiveDTOList(artistaMusicale.getAlbumsLive());
-        List<String> singoliArtista = crossArtistaSingoloService.getSingoliByArtistaMusicale(artistaMusicale.getIdArtista());
-        List<RaccoltaDTO> raccoltaDTOList = raccoltaService.mapTORaccoltaDTOList(artistaMusicale.getRaccolte());
-        ArtistaMusicaleDTO artistaMusicaleDTO = ArtistaMusicaleDTO.builder()
-                .nome(artistaMusicale.getNome())
-                .descrizione(artistaMusicale.getDescrizione())
-                .paeseDOrigine(artistaMusicale.getPaeseDOrigine())
-                .generi(artistaMusicale.getGeneri())
-                .albumsInStudioDTOS(albumInStudioDTOList)
-                .albumsLiveDTOS(albumLiveDTOList)
-                .singoli(singoliArtista)
-                .raccoltaDTOS(raccoltaDTOList)
-                .build();
-        return artistaMusicaleDTO;
-    }
-
-    @Override
-    public List<ArtistaMusicaleDTO> mapTOArtistaMusicaleDTOList(List<ArtistaMusicale> artistaMusicaleList) {
-        return artistaMusicaleList.stream()
-                .map(this::mapTOArtistaMusicaleDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public ArtistaMusicale mapToArtistaMusicale(ArtistaMusicaleDTO artistaMusicaleDTO) {
-        List<AlbumInStudio> albumInStudioList = albumInStudioService.mapTOAlbumInStudioList(artistaMusicaleDTO.getAlbumsInStudioDTOS());
-        List<AlbumLive> albumLiveList = albumLiveService.mapTOAlbumLiveList(artistaMusicaleDTO.getAlbumsLiveDTOS());
-        List<CrossArtistaSingolo> crossArtistaSingoloList = crossArtistaSingoloService.getAssociationListByListOfSingoli(artistaMusicaleDTO.getSingoli());
-        List<Raccolta> raccoltaList = raccoltaService.mapTORaccoltaList(artistaMusicaleDTO.getRaccoltaDTOS());
-        ArtistaMusicale artistaMusicale = ArtistaMusicale.builder()
-                .nome(artistaMusicaleDTO.getNome())
-                .descrizione(artistaMusicaleDTO.getDescrizione())
-                .generi(artistaMusicaleDTO.getGeneri())
-                .paeseDOrigine(artistaMusicaleDTO.getPaeseDOrigine())
-                .albumsInStudio(albumInStudioList)
-                .albumsLive(albumLiveList)
-                .crossArtistaSingolos(crossArtistaSingoloList)
-                .raccolte(raccoltaList)
-                .build();
-        return artistaMusicale;
-    }
-
-    @Override
-    public List<ArtistaMusicale> mapTOArtistaMusicaleList(List<ArtistaMusicaleDTO> artistaMusicaleDTOList) {
-        return artistaMusicaleDTOList.stream()
-                .map(this::mapToArtistaMusicale)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ArtistaMusicaleDTO> getArtistiMusicali() {
-        List<ArtistaMusicale> artisti = new ArrayList<>(artistaMusicaleRepository.findAll());
-        return mapTOArtistaMusicaleDTOList(artisti);
-    }
-
-    @Override
-    public ArtistaMusicaleDTO getArtistaMusicaleDTO(Integer id) {
-        Optional<ArtistaMusicale> artistaMusicale = artistaMusicaleRepository.findById(id);
-        if (artistaMusicale.isPresent()){
-            return mapTOArtistaMusicaleDTO(artistaMusicale.get());
-        } else {
-            return null;
-        }
-
-    }
-
     @Override
     public ArtistaMusicale getArtistaMusicaleById(Integer id) {
         Optional<ArtistaMusicale> artistaMusicale = artistaMusicaleRepository.findById(id);
@@ -114,17 +46,85 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
     }
 
     @Override
-    public void addArtistaMusicale(ArtistaMusicaleDTO artistaMusicaleDTO) {
-        ArtistaMusicale artistaMusicale = mapToArtistaMusicale(artistaMusicaleDTO);
+    public ArtistaMusicaleDTO mapTODTO(ArtistaMusicale artistaMusicale) {
+        List<AlbumInStudioDTO> albumInStudioDTOList = albumInStudioService.mapTODTOList(artistaMusicale.getAlbumsInStudio());
+        List<AlbumLiveDTO> albumLiveDTOList = albumLiveService.mapTODTOList(artistaMusicale.getAlbumsLive());
+        List<String> singoliArtista = crossArtistaSingoloService.getSingoliByArtistaMusicale(artistaMusicale.getIdArtista());
+        List<RaccoltaDTO> raccoltaDTOList = raccoltaService.mapTODTOList(artistaMusicale.getRaccolte());
+        ArtistaMusicaleDTO artistaMusicaleDTO = ArtistaMusicaleDTO.builder()
+                .nome(artistaMusicale.getNome())
+                .descrizione(artistaMusicale.getDescrizione())
+                .paeseDOrigine(artistaMusicale.getPaeseDOrigine())
+                .generi(artistaMusicale.getGeneri())
+                .albumsInStudioDTOS(albumInStudioDTOList)
+                .albumsLiveDTOS(albumLiveDTOList)
+                .singoli(singoliArtista)
+                .raccoltaDTOS(raccoltaDTOList)
+                .build();
+        return artistaMusicaleDTO;
+    }
+
+    @Override
+    public List<ArtistaMusicaleDTO> mapTODTOList(List<ArtistaMusicale> artistaMusicaleList) {
+        return artistaMusicaleList.stream()
+                .map((ArtistaMusicale artistaMusicale) -> this.mapTODTO(artistaMusicale))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ArtistaMusicale mapToEntity(ArtistaMusicaleDTO artistaMusicaleDTO) {
+        List<AlbumInStudio> albumInStudioList = albumInStudioService.mapTOEntityList(artistaMusicaleDTO.getAlbumsInStudioDTOS());
+        List<AlbumLive> albumLiveList = albumLiveService.mapTOEntityList(artistaMusicaleDTO.getAlbumsLiveDTOS());
+        List<CrossArtistaSingolo> crossArtistaSingoloList = crossArtistaSingoloService.getAssociationListByListOfSingoli(artistaMusicaleDTO.getSingoli());
+        List<Raccolta> raccoltaList = raccoltaService.mapTOEntityList(artistaMusicaleDTO.getRaccoltaDTOS());
+        ArtistaMusicale artistaMusicale = ArtistaMusicale.builder()
+                .nome(artistaMusicaleDTO.getNome())
+                .descrizione(artistaMusicaleDTO.getDescrizione())
+                .generi(artistaMusicaleDTO.getGeneri())
+                .paeseDOrigine(artistaMusicaleDTO.getPaeseDOrigine())
+                .albumsInStudio(albumInStudioList)
+                .albumsLive(albumLiveList)
+                .crossArtistaSingolos(crossArtistaSingoloList)
+                .raccolte(raccoltaList)
+                .build();
+        return artistaMusicale;
+    }
+
+    @Override
+    public List<ArtistaMusicale> mapTOEntityList(List<ArtistaMusicaleDTO> artistaMusicaleDTOList) {
+        return artistaMusicaleDTOList.stream()
+                .map((ArtistaMusicaleDTO artistaMusicaleDTO) -> this.mapToEntity(artistaMusicaleDTO))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ArtistaMusicaleDTO> getDTOs() {
+        List<ArtistaMusicale> artisti = new ArrayList<>(artistaMusicaleRepository.findAll());
+        return mapTODTOList(artisti);
+    }
+
+    @Override
+    public ArtistaMusicaleDTO getDTO(Integer id) {
+        Optional<ArtistaMusicale> artistaMusicale = artistaMusicaleRepository.findById(id);
+        if (artistaMusicale.isPresent()) {
+            return mapTODTO(artistaMusicale.get());
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void add(ArtistaMusicaleDTO artistaMusicaleDTO) {
+        ArtistaMusicale artistaMusicale = mapToEntity(artistaMusicaleDTO);
         artistaMusicaleRepository.save(artistaMusicale);
     }
 
     @Override
-    public void updateArtistaMusicale(ArtistaMusicaleDTO artistaMusicaleDTO, Integer id) {
-        List<AlbumInStudio> albumInStudioList = albumInStudioService.mapTOAlbumInStudioList(artistaMusicaleDTO.getAlbumsInStudioDTOS());
-        List<AlbumLive> albumLiveList = albumLiveService.mapTOAlbumLiveList(artistaMusicaleDTO.getAlbumsLiveDTOS());
+    public void update(ArtistaMusicaleDTO artistaMusicaleDTO, Integer id) {
+        List<AlbumInStudio> albumInStudioList = albumInStudioService.mapTOEntityList(artistaMusicaleDTO.getAlbumsInStudioDTOS());
+        List<AlbumLive> albumLiveList = albumLiveService.mapTOEntityList(artistaMusicaleDTO.getAlbumsLiveDTOS());
         List<CrossArtistaSingolo> crossArtistaSingoloList = crossArtistaSingoloService.getAssociationListByListOfSingoli(artistaMusicaleDTO.getSingoli());
-        List<Raccolta> raccoltaList = raccoltaService.mapTORaccoltaList(artistaMusicaleDTO.getRaccoltaDTOS());
+        List<Raccolta> raccoltaList = raccoltaService.mapTOEntityList(artistaMusicaleDTO.getRaccoltaDTOS());
         ArtistaMusicale artistaMusicaleRicercato = artistaMusicaleRepository.findById(id).orElseThrow(() -> new RuntimeException("L'Artista ricercato non è presente"));
         artistaMusicaleRicercato.setNome(artistaMusicaleDTO.getNome());
         artistaMusicaleRicercato.setDescrizione(artistaMusicaleDTO.getDescrizione());
@@ -137,9 +137,8 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
         artistaMusicaleRepository.save(artistaMusicaleRicercato);
     }
 
-
     @Override
-    public void deleteArtistaMusicale(Integer id) {
+    public void delete(Integer id) {
         if (artistaMusicaleRepository.existsById(id)) {
             artistaMusicaleRepository.deleteById(id);
         }

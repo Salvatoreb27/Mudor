@@ -24,7 +24,7 @@ public class RaccoltaServiceImpl implements RaccoltaService {
     private ArtistaMusicaleService artistaMusicaleService;
 
     @Override
-    public RaccoltaDTO mapTORaccoltaDTO(Raccolta raccolta) {
+    public RaccoltaDTO mapTODTO(Raccolta raccolta) {
         RaccoltaDTO raccoltaDTO = RaccoltaDTO.builder()
                 .titoloRaccolta(raccolta.getTitoloRaccolta())
                 .dataRilascio(raccolta.getDataRilascio())
@@ -36,14 +36,14 @@ public class RaccoltaServiceImpl implements RaccoltaService {
     }
 
     @Override
-    public List<RaccoltaDTO> mapTORaccoltaDTOList(List<Raccolta> raccoltaList) {
+    public List<RaccoltaDTO> mapTODTOList(List<Raccolta> raccoltaList) {
         return raccoltaList.stream()
-                .map(this::mapTORaccoltaDTO)
+                .map((Raccolta raccolta) -> this.mapTODTO(raccolta))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Raccolta mapToRaccolta(RaccoltaDTO raccoltaDTO) {
+    public Raccolta mapToEntity(RaccoltaDTO raccoltaDTO) {
         Raccolta raccolta = Raccolta.builder()
                 .titoloRaccolta(raccoltaDTO.getTitoloRaccolta())
                 .dataRilascio(raccoltaDTO.getDataRilascio())
@@ -55,37 +55,36 @@ public class RaccoltaServiceImpl implements RaccoltaService {
     }
 
     @Override
-    public List<Raccolta> mapTORaccoltaList(List<RaccoltaDTO> raccoltaDTOList) {
+    public List<Raccolta> mapTOEntityList(List<RaccoltaDTO> raccoltaDTOList) {
         return raccoltaDTOList.stream()
-                .map(this::mapToRaccolta)
+                .map((RaccoltaDTO raccoltaDTO) -> this.mapToEntity(raccoltaDTO))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<RaccoltaDTO> getRaccolte() {
+    public List<RaccoltaDTO> getDTOs() {
         List<Raccolta> raccoltaList = new ArrayList<>(raccoltaRepository.findAll());
-        return mapTORaccoltaDTOList(raccoltaList);
+        return mapTODTOList(raccoltaList);
     }
 
     @Override
-    public RaccoltaDTO getRaccolta(Integer id) {
+    public RaccoltaDTO getDTO(Integer id) {
         Optional<Raccolta> raccolta = raccoltaRepository.findById(id);
         if (raccolta.isPresent()) {
-            return mapTORaccoltaDTO(raccolta.get());
+            return mapTODTO(raccolta.get());
         } else {
             return null;
         }
     }
 
     @Override
-    public void addRaccolta(RaccoltaDTO raccoltaDTO) {
-        Raccolta raccolta = mapToRaccolta(raccoltaDTO);
+    public void add(RaccoltaDTO raccoltaDTO) {
+        Raccolta raccolta = mapToEntity(raccoltaDTO);
         raccoltaRepository.save(raccolta);
     }
 
-
     @Override
-    public void updateRaccolta(RaccoltaDTO raccoltaDTO, Integer id) {
+    public void update(RaccoltaDTO raccoltaDTO, Integer id) {
         ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(raccoltaDTO.getIdArtistaMusicale());
         Raccolta raccoltaRicercata = raccoltaRepository.findById(id).orElseThrow(() -> new RuntimeException("La raccolta ricercata non è presente"));
         raccoltaRicercata.setTitoloRaccolta(raccoltaDTO.getTitoloRaccolta());
@@ -97,11 +96,9 @@ public class RaccoltaServiceImpl implements RaccoltaService {
     }
 
     @Override
-    public void deleteRaccolta(Integer id) {
+    public void delete(Integer id) {
         if (raccoltaRepository.existsById(id)) {
             raccoltaRepository.deleteById(id);
         }
     }
-
-
 }

@@ -24,7 +24,7 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
     private ArtistaMusicaleService artistaMusicaleService;
 
     @Override
-    public AlbumLiveDTO mapTOAlbumLiveDTO(AlbumLive albumLive) {
+    public AlbumLiveDTO mapTODTO(AlbumLive albumLive) {
         AlbumLiveDTO albumLiveDTO = AlbumLiveDTO.builder()
                 .titoloAlbumLive(albumLive.getTitoloAlbumLive())
                 .dataRilascio(albumLive.getDataRilascio())
@@ -36,14 +36,14 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
     }
 
     @Override
-    public List<AlbumLiveDTO> mapTOAlbumLiveDTOList(List<AlbumLive> albumsLiveList) {
-        return albumsLiveList.stream()
-                .map(this::mapTOAlbumLiveDTO)
+    public List<AlbumLiveDTO> mapTODTOList(List<AlbumLive> albumLiveList) {
+        return albumLiveList.stream()
+                .map((AlbumLive albumLive) -> this.mapTODTO(albumLive))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AlbumLive mapToAlbumLive(AlbumLiveDTO albumLiveDTO) {
+    public AlbumLive mapToEntity(AlbumLiveDTO albumLiveDTO) {
         AlbumLive albumLive = AlbumLive.builder()
                 .titoloAlbumLive(albumLiveDTO.getTitoloAlbumLive())
                 .dataRilascio(albumLiveDTO.getDataRilascio())
@@ -55,37 +55,36 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
     }
 
     @Override
-    public List<AlbumLive> mapTOAlbumLiveList(List<AlbumLiveDTO> albumsLiveDTOList) {
-        return albumsLiveDTOList.stream()
-                .map(this::mapToAlbumLive)
+    public List<AlbumLive> mapTOEntityList(List<AlbumLiveDTO> albumLiveDTOList) {
+        return albumLiveDTOList.stream()
+                .map((AlbumLiveDTO albumLiveDTO) -> this.mapToEntity(albumLiveDTO))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AlbumLiveDTO> getAlbumsLive() {
+    public List<AlbumLiveDTO> getDTOs() {
         List<AlbumLive> albumLiveList = new ArrayList<>(albumLiveRepository.findAll());
-        return mapTOAlbumLiveDTOList(albumLiveList);
+        return mapTODTOList(albumLiveList);
     }
 
     @Override
-    public AlbumLiveDTO getAlbumLive(Integer id) {
+    public AlbumLiveDTO getDTO(Integer id) {
         Optional<AlbumLive> albumLive = albumLiveRepository.findById(id);
         if (albumLive.isPresent()) {
-            return mapTOAlbumLiveDTO(albumLive.get());
+            return mapTODTO(albumLive.get());
         } else {
             return null;
         }
     }
 
     @Override
-    public void addAlbumLive(AlbumLiveDTO albumLiveDTO) {
-        AlbumLive albumLive = mapToAlbumLive(albumLiveDTO);
+    public void add(AlbumLiveDTO albumLiveDTO) {
+        AlbumLive albumLive = mapToEntity(albumLiveDTO);
         albumLiveRepository.save(albumLive);
     }
 
-
     @Override
-    public void updateAlbumLive(AlbumLiveDTO albumLiveDTO, Integer id) {
+    public void update(AlbumLiveDTO albumLiveDTO, Integer id) {
         ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(albumLiveDTO.getIdArtistaMusicale());
         AlbumLive albumLiveRicercato = albumLiveRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album live ricercato non è presente"));
         albumLiveRicercato.setTitoloAlbumLive(albumLiveDTO.getTitoloAlbumLive());
@@ -97,7 +96,7 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
     }
 
     @Override
-    public void deleteAlbumLive(Integer id) {
+    public void delete(Integer id) {
         if (albumLiveRepository.existsById(id)) {
             albumLiveRepository.deleteById(id);
         }

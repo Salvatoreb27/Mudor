@@ -27,47 +27,6 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
     @Autowired
     private SingoloService singoloService;
 
-
-    @Override
-    public CrossArtistaSingoloDTO mapTOCrossArtistaSingoloDTO(CrossArtistaSingolo crossArtistaSingolo) {
-        CrossArtistaSingoloDTO crossArtistaSingoloDTO = CrossArtistaSingoloDTO.builder()
-                .nomeArtista(crossArtistaSingolo.getArtistaMusicale().getNome())
-                .titoloSingolo(crossArtistaSingolo.getSingolo().getTitoloSingolo())
-                .build();
-        return crossArtistaSingoloDTO;
-    }
-
-    @Override
-    public List<CrossArtistaSingoloDTO> mapTOCrossArtistaSingoloDTOList(List<CrossArtistaSingolo> crossArtistaSingoloList) {
-        return crossArtistaSingoloList.stream()
-                .map(this::mapTOCrossArtistaSingoloDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public CrossArtistaSingolo mapToCrossArtistaSingolo(CrossArtistaSingoloDTO crossArtistaSingoloDTO) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleByNome(crossArtistaSingoloDTO.getNomeArtista());
-        Singolo singolo = singoloService.getSingoloByTitolo(crossArtistaSingoloDTO.getTitoloSingolo());
-        CrossArtistaSingolo crossArtistaSingolo = CrossArtistaSingolo.builder()
-                .artistaMusicale(artistaMusicale)
-                .singolo(singolo)
-                .build();
-        return null;
-    }
-
-    @Override
-    public List<CrossArtistaSingolo> mapTOCrossArtistaSingoloList(List<CrossArtistaSingoloDTO> crossArtistaSingoloDTOList) {
-        return crossArtistaSingoloDTOList.stream()
-                .map(this::mapToCrossArtistaSingolo)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<CrossArtistaSingoloDTO> getAllRelations() {
-        List<CrossArtistaSingolo> crossArtistaSingoloList = new ArrayList<>(crossArtistaSingoloRepository.findAll());
-        return mapTOCrossArtistaSingoloDTOList(crossArtistaSingoloList);
-    }
-
     @Override
     public List<CrossArtistaSingolo> getAssociationListByListOfSingoli(List<String> singoli) {
         List<CrossArtistaSingolo> associazioniArtistaSingolo = crossArtistaSingoloRepository.findAll();
@@ -90,16 +49,6 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
                 }
         }
         return associazioniArtistaSingolo;
-    }
-
-    @Override
-    public CrossArtistaSingoloDTO getRelation(Integer id) {
-        Optional<CrossArtistaSingolo> crossArtistaSingolo = crossArtistaSingoloRepository.findById(id);
-        if (crossArtistaSingolo.isPresent()) {
-            return mapTOCrossArtistaSingoloDTO(crossArtistaSingolo.get());
-        } else {
-            return null;
-        }
     }
 
     @Override
@@ -127,13 +76,63 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
     }
 
     @Override
-    public void addRelation(CrossArtistaSingoloDTO crossArtistaSingoloDTO) {
-        CrossArtistaSingolo crossArtistaSingolo = mapToCrossArtistaSingolo(crossArtistaSingoloDTO);
+    public CrossArtistaSingoloDTO mapTODTO(CrossArtistaSingolo crossArtistaSingolo) {
+        CrossArtistaSingoloDTO crossArtistaSingoloDTO = CrossArtistaSingoloDTO.builder()
+                .nomeArtista(crossArtistaSingolo.getArtistaMusicale().getNome())
+                .titoloSingolo(crossArtistaSingolo.getSingolo().getTitoloSingolo())
+                .build();
+        return crossArtistaSingoloDTO;
+    }
+
+    @Override
+    public List<CrossArtistaSingoloDTO> mapTODTOList(List<CrossArtistaSingolo> crossArtistaSingoloList) {
+        return crossArtistaSingoloList.stream()
+                .map((CrossArtistaSingolo crossArtistaSingolo) -> this.mapTODTO(crossArtistaSingolo))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CrossArtistaSingolo mapToEntity(CrossArtistaSingoloDTO crossArtistaSingoloDTO) {
+        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleByNome(crossArtistaSingoloDTO.getNomeArtista());
+        Singolo singolo = singoloService.getSingoloByTitolo(crossArtistaSingoloDTO.getTitoloSingolo());
+        CrossArtistaSingolo crossArtistaSingolo = CrossArtistaSingolo.builder()
+                .artistaMusicale(artistaMusicale)
+                .singolo(singolo)
+                .build();
+        return null;
+    }
+
+    @Override
+    public List<CrossArtistaSingolo> mapTOEntityList(List<CrossArtistaSingoloDTO> crossArtistaSingoloDTOList) {
+        return crossArtistaSingoloDTOList.stream()
+                .map((CrossArtistaSingoloDTO crossArtistaSingoloDTO) -> this.mapToEntity(crossArtistaSingoloDTO))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CrossArtistaSingoloDTO> getDTOs() {
+        List<CrossArtistaSingolo> crossArtistaSingoloList = new ArrayList<>(crossArtistaSingoloRepository.findAll());
+        return mapTODTOList(crossArtistaSingoloList);
+    }
+
+    @Override
+    public CrossArtistaSingoloDTO getDTO(Integer id) {
+        Optional<CrossArtistaSingolo> crossArtistaSingolo = crossArtistaSingoloRepository.findById(id);
+        if (crossArtistaSingolo.isPresent()) {
+            return mapTODTO(crossArtistaSingolo.get());
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void add(CrossArtistaSingoloDTO crossArtistaSingoloDTO) {
+        CrossArtistaSingolo crossArtistaSingolo = mapToEntity(crossArtistaSingoloDTO);
         crossArtistaSingoloRepository.save(crossArtistaSingolo);
     }
 
     @Override
-    public void updateRelation(CrossArtistaSingoloDTO crossArtistaSingoloDTO, Integer id) {
+    public void update(CrossArtistaSingoloDTO crossArtistaSingoloDTO, Integer id) {
         Singolo singolo = singoloService.getSingoloByTitolo(crossArtistaSingoloDTO.getTitoloSingolo());
         ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleByNome(crossArtistaSingoloDTO.getNomeArtista());
         CrossArtistaSingolo associazioneCrossArtistaSingoloRicercata = crossArtistaSingoloRepository.findById(id).orElseThrow(() -> new RuntimeException("L'associazione ricercata non è presente"));
@@ -142,9 +141,8 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
         crossArtistaSingoloRepository.save(associazioneCrossArtistaSingoloRicercata);
     }
 
-
     @Override
-    public void deleteRelation(Integer id) {
+    public void delete(Integer id) {
         if (crossArtistaSingoloRepository.existsById(id)) {
             crossArtistaSingoloRepository.deleteById(id);
         }
