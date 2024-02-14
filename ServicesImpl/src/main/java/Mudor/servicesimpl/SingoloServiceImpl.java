@@ -88,9 +88,9 @@ public class SingoloServiceImpl implements SingoloService {
         List<CrossArtistaSingolo> associazioniArtistaSingolo = crossArtistaSingoloService.getAssociationListByListOfArtisti(singoloDTO.getArtisti());
         Singolo singoloRicercato = singoloRepository.findById(id).orElseThrow(() -> new RuntimeException("Il singolo ricercato non è presente"));
         singoloRicercato.setTitoloSingolo(singoloDTO.getTitoloSingolo() == null ? singoloRicercato.getTitoloSingolo() : singoloDTO.getTitoloSingolo());
-        singoloRicercato.setDataRilascio(singoloDTO.getDataRilascio());
-        singoloRicercato.setGeneri(singoloDTO.getGeneri());
-        singoloRicercato.setCrossArtistaSingolos(associazioniArtistaSingolo);
+        singoloRicercato.setDataRilascio(singoloDTO.getDataRilascio() == null ? singoloRicercato.getDataRilascio() : singoloDTO.getDataRilascio());
+        singoloRicercato.setGeneri(singoloDTO.getGeneri() == null ? singoloRicercato.getGeneri() : singoloDTO.getGeneri());
+        singoloRicercato.setCrossArtistaSingolos(associazioniArtistaSingolo == null ? singoloRicercato.getCrossArtistaSingolos() : associazioniArtistaSingolo);
         singoloRepository.save(singoloRicercato);
     }
 

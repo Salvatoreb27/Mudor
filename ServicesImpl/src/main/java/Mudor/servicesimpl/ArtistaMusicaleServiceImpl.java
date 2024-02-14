@@ -126,14 +126,14 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
         List<CrossArtistaSingolo> crossArtistaSingoloList = crossArtistaSingoloService.getAssociationListByListOfSingoli(artistaMusicaleDTO.getSingoli());
         List<Raccolta> raccoltaList = raccoltaService.mapTOEntityList(artistaMusicaleDTO.getRaccoltaDTOS());
         ArtistaMusicale artistaMusicaleRicercato = artistaMusicaleRepository.findById(id).orElseThrow(() -> new RuntimeException("L'Artista ricercato non è presente"));
-        artistaMusicaleRicercato.setNome(artistaMusicaleDTO.getNome());
-        artistaMusicaleRicercato.setDescrizione(artistaMusicaleDTO.getDescrizione());
-        artistaMusicaleRicercato.setGeneri(artistaMusicaleDTO.getGeneri());
-        artistaMusicaleRicercato.setPaeseDOrigine(artistaMusicaleDTO.getPaeseDOrigine());
-        artistaMusicaleRicercato.setAlbumsInStudio(albumInStudioList);
-        artistaMusicaleRicercato.setAlbumsLive(albumLiveList);
-        artistaMusicaleRicercato.setCrossArtistaSingolos(crossArtistaSingoloList);
-        artistaMusicaleRicercato.setRaccolte(raccoltaList);
+        artistaMusicaleRicercato.setNome(artistaMusicaleDTO.getNome() == null ? artistaMusicaleRicercato.getNome() : artistaMusicaleDTO.getNome());
+        artistaMusicaleRicercato.setDescrizione(artistaMusicaleDTO.getDescrizione() == null ? artistaMusicaleRicercato.getDescrizione() : artistaMusicaleDTO.getDescrizione());
+        artistaMusicaleRicercato.setGeneri(artistaMusicaleDTO.getGeneri() == null ? artistaMusicaleRicercato.getGeneri() : artistaMusicaleDTO.getGeneri());
+        artistaMusicaleRicercato.setPaeseDOrigine(artistaMusicaleDTO.getPaeseDOrigine() == null ? artistaMusicaleRicercato.getPaeseDOrigine() : artistaMusicaleDTO.getPaeseDOrigine());
+        artistaMusicaleRicercato.setAlbumsInStudio(albumInStudioList == null ? artistaMusicaleRicercato.getAlbumsInStudio() : albumInStudioList);
+        artistaMusicaleRicercato.setAlbumsLive(albumLiveList == null ? artistaMusicaleRicercato.getAlbumsLive() : albumLiveList);
+        artistaMusicaleRicercato.setCrossArtistaSingolos(crossArtistaSingoloList == null ? artistaMusicaleRicercato.getCrossArtistaSingolos() : crossArtistaSingoloList);
+        artistaMusicaleRicercato.setRaccolte(raccoltaList == null ? artistaMusicaleRicercato.getRaccolte() : raccoltaList);
         artistaMusicaleRepository.save(artistaMusicaleRicercato);
     }
 

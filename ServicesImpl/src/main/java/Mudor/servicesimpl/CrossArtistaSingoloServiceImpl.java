@@ -136,8 +136,8 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
         Singolo singolo = singoloService.getSingoloByTitolo(crossArtistaSingoloDTO.getTitoloSingolo());
         ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleByNome(crossArtistaSingoloDTO.getNomeArtista());
         CrossArtistaSingolo associazioneCrossArtistaSingoloRicercata = crossArtistaSingoloRepository.findById(id).orElseThrow(() -> new RuntimeException("L'associazione ricercata non è presente"));
-        associazioneCrossArtistaSingoloRicercata.setSingolo(singolo);
-        associazioneCrossArtistaSingoloRicercata.setArtistaMusicale(artistaMusicale);
+        associazioneCrossArtistaSingoloRicercata.setSingolo(singolo == null ? associazioneCrossArtistaSingoloRicercata.getSingolo() : singolo);
+        associazioneCrossArtistaSingoloRicercata.setArtistaMusicale(artistaMusicale == null ? associazioneCrossArtistaSingoloRicercata.getArtistaMusicale() : artistaMusicale);
         crossArtistaSingoloRepository.save(associazioneCrossArtistaSingoloRicercata);
     }
 

@@ -88,11 +88,11 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
     public void update(AlbumInStudioDTO albumInStudioDTO, Integer id) {
         ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(albumInStudioDTO.getIdArtistaMusicale());
         AlbumInStudio albumInStudioRicercato = albumInStudioRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album in studio ricercato non è presente"));
-        albumInStudioRicercato.setTitoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio());
-        albumInStudioRicercato.setDataRilascio(albumInStudioDTO.getDataRilascio());
-        albumInStudioRicercato.setGeneri(albumInStudioDTO.getGeneri());
-        albumInStudioRicercato.setBrani(albumInStudioDTO.getBrani());
-        albumInStudioRicercato.setArtistaMusicale(artistaMusicale);
+        albumInStudioRicercato.setTitoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio() == null ? albumInStudioRicercato.getTitoloAlbumInStudio() : albumInStudioDTO.getTitoloAlbumInStudio());
+        albumInStudioRicercato.setDataRilascio(albumInStudioDTO.getDataRilascio() == null ? albumInStudioRicercato.getDataRilascio() : albumInStudioDTO.getDataRilascio());
+        albumInStudioRicercato.setGeneri(albumInStudioDTO.getGeneri() == null ? albumInStudioRicercato.getGeneri() : albumInStudioDTO.getGeneri());
+        albumInStudioRicercato.setBrani(albumInStudioDTO.getBrani() == null ? albumInStudioRicercato.getBrani() : albumInStudioDTO.getBrani());
+        albumInStudioRicercato.setArtistaMusicale(artistaMusicale == null ? albumInStudioRicercato.getArtistaMusicale() : artistaMusicale);
         albumInStudioRepository.save(albumInStudioRicercato);
     }
 

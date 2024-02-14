@@ -87,11 +87,11 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
     public void update(AlbumLiveDTO albumLiveDTO, Integer id) {
         ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(albumLiveDTO.getIdArtistaMusicale());
         AlbumLive albumLiveRicercato = albumLiveRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album live ricercato non è presente"));
-        albumLiveRicercato.setTitoloAlbumLive(albumLiveDTO.getTitoloAlbumLive());
-        albumLiveRicercato.setDataRilascio(albumLiveDTO.getDataRilascio());
-        albumLiveRicercato.setGeneri(albumLiveDTO.getGeneri());
-        albumLiveRicercato.setBrani(albumLiveDTO.getBrani());
-        albumLiveRicercato.setArtistaMusicale(artistaMusicale);
+        albumLiveRicercato.setTitoloAlbumLive(albumLiveDTO.getTitoloAlbumLive() == null ? albumLiveRicercato.getTitoloAlbumLive() : albumLiveDTO.getTitoloAlbumLive());
+        albumLiveRicercato.setDataRilascio(albumLiveDTO.getDataRilascio() == null ? albumLiveRicercato.getDataRilascio() : albumLiveDTO.getDataRilascio());
+        albumLiveRicercato.setGeneri(albumLiveDTO.getGeneri() == null ? albumLiveRicercato.getGeneri() : albumLiveDTO.getGeneri());
+        albumLiveRicercato.setBrani(albumLiveDTO.getBrani() == null ? albumLiveRicercato.getBrani() : albumLiveDTO.getBrani());
+        albumLiveRicercato.setArtistaMusicale(artistaMusicale == null ? albumLiveRicercato.getArtistaMusicale() : artistaMusicale);
         albumLiveRepository.save(albumLiveRicercato);
     }
 

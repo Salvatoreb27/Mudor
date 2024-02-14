@@ -87,11 +87,11 @@ public class RaccoltaServiceImpl implements RaccoltaService {
     public void update(RaccoltaDTO raccoltaDTO, Integer id) {
         ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(raccoltaDTO.getIdArtistaMusicale());
         Raccolta raccoltaRicercata = raccoltaRepository.findById(id).orElseThrow(() -> new RuntimeException("La raccolta ricercata non è presente"));
-        raccoltaRicercata.setTitoloRaccolta(raccoltaDTO.getTitoloRaccolta());
-        raccoltaRicercata.setDataRilascio(raccoltaDTO.getDataRilascio());
-        raccoltaRicercata.setGeneri(raccoltaDTO.getGeneri());
-        raccoltaRicercata.setBrani(raccoltaDTO.getBrani());
-        raccoltaRicercata.setArtistaMusicale(artistaMusicale);
+        raccoltaRicercata.setTitoloRaccolta(raccoltaDTO.getTitoloRaccolta() == null ? raccoltaRicercata.getTitoloRaccolta() : raccoltaDTO.getTitoloRaccolta());
+        raccoltaRicercata.setDataRilascio(raccoltaDTO.getDataRilascio() == null ? raccoltaRicercata.getDataRilascio() : raccoltaDTO.getDataRilascio());
+        raccoltaRicercata.setGeneri(raccoltaDTO.getGeneri() == null ? raccoltaRicercata.getGeneri() : raccoltaDTO.getGeneri());
+        raccoltaRicercata.setBrani(raccoltaDTO.getBrani() == null ? raccoltaRicercata.getBrani() : raccoltaDTO.getBrani());
+        raccoltaRicercata.setArtistaMusicale(artistaMusicale == null ? raccoltaRicercata.getArtistaMusicale() : artistaMusicale);
         raccoltaRepository.save(raccoltaRicercata);
     }
 
