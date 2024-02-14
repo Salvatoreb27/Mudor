@@ -1,13 +1,14 @@
 package Mudor.servicesimpl;
 
-import Mudor.DTO.AlbumInStudioDTO;
-import Mudor.DTO.AlbumLiveDTO;
-import Mudor.DTO.ArtistaMusicaleDTO;
-import Mudor.DTO.RaccoltaDTO;
+import Mudor.DTO.*;
 import Mudor.entity.*;
+import Mudor.entity.spec.ArtistaMusicaleSpecifications;
+import Mudor.entity.spec.SingoloSpecifications;
 import Mudor.repository.ArtistaMusicaleRepository;
 import Mudor.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -142,6 +143,53 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
         if (artistaMusicaleRepository.existsById(id)) {
             artistaMusicaleRepository.deleteById(id);
         }
+    }
+
+    private List<Specification<ArtistaMusicale>> createSpecifications(Integer idArtistaMusicale, String nome, String descrizione, String paeseDOrigine,List<String> generi, String titoloAlbumInStudio, String titoloAlbumLive, String titoloSingolo, String titoloRaccolta) {
+        List<Specification<ArtistaMusicale>> specifications = new ArrayList<>();
+        if (idArtistaMusicale != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likeIdArtistaMusicale(idArtistaMusicale));
+        }
+        if (nome != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likeNome(nome));
+        }
+        if (descrizione != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likeDescrizione(descrizione));
+        }
+        if (paeseDOrigine != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likePaeseDOrigine(paeseDOrigine));
+        }
+        if (generi != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likeGeneri(generi));
+        }
+        if (titoloAlbumInStudio != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likeTitoloAlbumInStudio(titoloAlbumInStudio));
+        }
+        if (titoloAlbumLive != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likeTitoloAlbumLive(titoloAlbumLive));
+        }
+        if (titoloSingolo != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likeTitoloSingolo(titoloSingolo));
+        }
+        if (titoloRaccolta != null) {
+            specifications.add(ArtistaMusicaleSpecifications.likeTitoloRaccolta(titoloRaccolta));
+        }
+        return specifications;
+    }
+    private Specification<ArtistaMusicale> combineSpecifications(List<Specification<ArtistaMusicale>> specifications) {
+        return specifications.stream().reduce(Specification::and).orElse(null);
+    }
+
+    @Override
+    public List<ArtistaMusicaleDTO> getArtistaMusicaleBy(Integer idArtistaMusicale, String nome, String descrizione, String paeseDOrigine,List<String> generi, String titoloAlbumInStudio, String titoloAlbumLive, String titoloSingolo, String titoloRaccolta) {
+        List<Specification<ArtistaMusicale>> specifications = createSpecifications(idArtistaMusicale, nome, descrizione, paeseDOrigine, generi, titoloAlbumInStudio, titoloAlbumLive, titoloSingolo, titoloRaccolta);
+        Specification<ArtistaMusicale> combinedSpecification = combineSpecifications(specifications);
+
+        List<ArtistaMusicale> listaArtistiMusicali= artistaMusicaleRepository.findAll((Sort) combinedSpecification);
+
+        return listaArtistiMusicali.stream()
+                .map(this::mapTODTO)
+                .collect(Collectors.toList());
     }
 
 }

@@ -19,10 +19,8 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
 
     @Autowired
     private CrossArtistaSingoloRepository crossArtistaSingoloRepository;
-
     @Autowired
     private ArtistaMusicaleRepository artistaMusicaleRepository;
-
     @Autowired
     private SingoloRepository singoloRepository;
 

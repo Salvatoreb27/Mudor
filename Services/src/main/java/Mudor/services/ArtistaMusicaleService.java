@@ -13,5 +13,5 @@ public interface ArtistaMusicaleService extends MapAndCRUDService<ArtistaMusical
 
     ArtistaMusicale getArtistaMusicaleById(Integer id);
     ArtistaMusicale getArtistaMusicaleByNome(String nome);
-    List<ArtistaMusicaleDTO> getArtistaMusicaleBy(Integer idAristaMusicale, String nome, String descrizione, String paeseDOrigine,List<String> generi, String titoloAlbumInStudio, String titoloAlbumLive, String titoloSingolo, String titoloRaccolta);
+    List<ArtistaMusicaleDTO> getArtistaMusicaleBy(Integer idArtistaMusicale, String nome, String descrizione, String paeseDOrigine,List<String> generi, String titoloAlbumInStudio, String titoloAlbumLive, String titoloSingolo, String titoloRaccolta);
 }

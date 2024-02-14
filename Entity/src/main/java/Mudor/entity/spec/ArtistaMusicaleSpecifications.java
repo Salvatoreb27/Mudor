@@ -62,7 +62,7 @@ public class ArtistaMusicaleSpecifications {
             return criteriaBuilder.equal(albumInStudioArtistaMusicaleJoin.get("titoloAlbumInStdio"), titoloAlbumInStudio);
         };
     }
-    public static Specification<AlbumLive> likeTitoloAlbumLive(String titoloAlbumLive) {
+    public static Specification<ArtistaMusicale> likeTitoloAlbumLive(String titoloAlbumLive) {
 
         return (root, query, criteriaBuilder) -> {
 
@@ -71,7 +71,7 @@ public class ArtistaMusicaleSpecifications {
             return criteriaBuilder.equal(albumLiveArtistaMusicaleJoin.get("titoloAlbumLive"), titoloAlbumLive);
         };
     }
-    public static Specification<AlbumLive> likeTitoloSingolo(String titoloSingolo) {
+    public static Specification<ArtistaMusicale> likeTitoloSingolo(String titoloSingolo) {
 
         return (root, query, criteriaBuilder) -> {
 
@@ -81,7 +81,7 @@ public class ArtistaMusicaleSpecifications {
         };
     }
 
-    public static Specification<AlbumLive> likeTitoloRaccolta(String titoloRaccolta) {
+    public static Specification<ArtistaMusicale> likeTitoloRaccolta(String titoloRaccolta) {
 
         return (root, query, criteriaBuilder) -> {
 

@@ -115,7 +115,6 @@ public class SingoloServiceImpl implements SingoloService {
             return null;
         }
     }
-
     private List<Specification<Singolo>> createSpecifications(Integer idSingolo, String titoloSingolo, Date dataRilascio, List<String> brani, List<String> generi, String nome) {
         List<Specification<Singolo>> specifications = new ArrayList<>();
         if (idSingolo != null) {
