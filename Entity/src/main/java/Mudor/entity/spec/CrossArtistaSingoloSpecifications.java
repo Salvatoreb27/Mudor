@@ -1,4 +1,6 @@
 package Mudor.entity.spec;
 
-public class CrossArtistaSingoloSpecifications {
+import org.springframework.web.servlet.mvc.AbstractController;
+
+public class CrossArtistaSingoloSpecifications  {
 }
