@@ -1,31 +1,30 @@
 package Mudor.servicesimpl;
 
-import Mudor.DTO.AlbumLiveDTO;
-import Mudor.DTO.ArtistaMusicaleDTO;
 import Mudor.DTO.CrossArtistaSingoloDTO;
-import Mudor.DTO.RaccoltaDTO;
 import Mudor.entity.*;
+import Mudor.repository.ArtistaMusicaleRepository;
 import Mudor.repository.CrossArtistaSingoloRepository;
-import Mudor.services.ArtistaMusicaleService;
+import Mudor.repository.SingoloRepository;
 import Mudor.services.CrossArtistaSingoloService;
-import Mudor.services.SingoloService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloService {
 
     @Autowired
     private CrossArtistaSingoloRepository crossArtistaSingoloRepository;
 
     @Autowired
-    private ArtistaMusicaleService artistaMusicaleService;
+    private ArtistaMusicaleRepository artistaMusicaleRepository;
 
     @Autowired
-    private SingoloService singoloService;
+    private SingoloRepository singoloRepository;
 
     @Override
     public List<CrossArtistaSingolo> getAssociationListByListOfSingoli(List<String> singoli) {
@@ -93,8 +92,8 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
 
     @Override
     public CrossArtistaSingolo mapToEntity(CrossArtistaSingoloDTO crossArtistaSingoloDTO) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleByNome(crossArtistaSingoloDTO.getNomeArtista());
-        Singolo singolo = singoloService.getSingoloByTitolo(crossArtistaSingoloDTO.getTitoloSingolo());
+        ArtistaMusicale artistaMusicale = artistaMusicaleRepository.findByNome(crossArtistaSingoloDTO.getNomeArtista()).orElseThrow(() -> new RuntimeException("Artista musicale non trovato"));
+        Singolo singolo = singoloRepository.findByTitoloSingolo(crossArtistaSingoloDTO.getTitoloSingolo()).orElseThrow(() -> new RuntimeException("Singolo non trovato"));
         CrossArtistaSingolo crossArtistaSingolo = CrossArtistaSingolo.builder()
                 .artistaMusicale(artistaMusicale)
                 .singolo(singolo)
@@ -133,8 +132,8 @@ public class CrossArtistaSingoloServiceImpl implements CrossArtistaSingoloServic
 
     @Override
     public void update(CrossArtistaSingoloDTO crossArtistaSingoloDTO, Integer id) {
-        Singolo singolo = singoloService.getSingoloByTitolo(crossArtistaSingoloDTO.getTitoloSingolo());
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleByNome(crossArtistaSingoloDTO.getNomeArtista());
+        Singolo singolo = singoloRepository.findByTitoloSingolo(crossArtistaSingoloDTO.getTitoloSingolo()).orElseThrow(() -> new RuntimeException("Singolo non trovato"));
+        ArtistaMusicale artistaMusicale = artistaMusicaleRepository.findByNome(crossArtistaSingoloDTO.getNomeArtista()).orElseThrow(() -> new RuntimeException("Artista musicale non trovato"));
         CrossArtistaSingolo associazioneCrossArtistaSingoloRicercata = crossArtistaSingoloRepository.findById(id).orElseThrow(() -> new RuntimeException("L'associazione ricercata non è presente"));
         associazioneCrossArtistaSingoloRicercata.setSingolo(singolo == null ? associazioneCrossArtistaSingoloRicercata.getSingolo() : singolo);
         associazioneCrossArtistaSingoloRicercata.setArtistaMusicale(artistaMusicale == null ? associazioneCrossArtistaSingoloRicercata.getArtistaMusicale() : artistaMusicale);

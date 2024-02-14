@@ -5,23 +5,26 @@ import Mudor.DTO.RaccoltaDTO;
 import Mudor.entity.AlbumLive;
 import Mudor.entity.ArtistaMusicale;
 import Mudor.entity.Raccolta;
+import Mudor.repository.ArtistaMusicaleRepository;
 import Mudor.repository.RaccoltaRepository;
 import Mudor.services.ArtistaMusicaleService;
 import Mudor.services.RaccoltaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class RaccoltaServiceImpl implements RaccoltaService {
 
     @Autowired
     private RaccoltaRepository raccoltaRepository;
 
     @Autowired
-    private ArtistaMusicaleService artistaMusicaleService;
+    private ArtistaMusicaleRepository artistaMusicaleRepository;
 
     @Override
     public RaccoltaDTO mapTODTO(Raccolta raccolta) {
@@ -44,12 +47,13 @@ public class RaccoltaServiceImpl implements RaccoltaService {
 
     @Override
     public Raccolta mapToEntity(RaccoltaDTO raccoltaDTO) {
+        ArtistaMusicale artistaMusicale = artistaMusicaleRepository.findById(raccoltaDTO.getIdArtistaMusicale()).orElseThrow(() -> new RuntimeException("Artista musicale non trovato"));
         Raccolta raccolta = Raccolta.builder()
                 .titoloRaccolta(raccoltaDTO.getTitoloRaccolta())
                 .dataRilascio(raccoltaDTO.getDataRilascio())
                 .brani(raccoltaDTO.getBrani())
                 .generi(raccoltaDTO.getGeneri())
-                .artistaMusicale(artistaMusicaleService.getArtistaMusicaleById(raccoltaDTO.getIdArtistaMusicale()))
+                .artistaMusicale(artistaMusicale)
                 .build();
         return null;
     }
@@ -85,7 +89,7 @@ public class RaccoltaServiceImpl implements RaccoltaService {
 
     @Override
     public void update(RaccoltaDTO raccoltaDTO, Integer id) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(raccoltaDTO.getIdArtistaMusicale());
+        ArtistaMusicale artistaMusicale = artistaMusicaleRepository.findById(raccoltaDTO.getIdArtistaMusicale()).orElseThrow(() -> new RuntimeException("Artista musicale non trovato"));
         Raccolta raccoltaRicercata = raccoltaRepository.findById(id).orElseThrow(() -> new RuntimeException("La raccolta ricercata non è presente"));
         raccoltaRicercata.setTitoloRaccolta(raccoltaDTO.getTitoloRaccolta() == null ? raccoltaRicercata.getTitoloRaccolta() : raccoltaDTO.getTitoloRaccolta());
         raccoltaRicercata.setDataRilascio(raccoltaDTO.getDataRilascio() == null ? raccoltaRicercata.getDataRilascio() : raccoltaDTO.getDataRilascio());

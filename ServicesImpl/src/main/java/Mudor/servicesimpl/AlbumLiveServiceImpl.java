@@ -1,27 +1,27 @@
 package Mudor.servicesimpl;
 
-import Mudor.DTO.AlbumInStudioDTO;
 import Mudor.DTO.AlbumLiveDTO;
-import Mudor.entity.AlbumInStudio;
 import Mudor.entity.AlbumLive;
 import Mudor.entity.ArtistaMusicale;
 import Mudor.repository.AlbumLiveRepository;
+import Mudor.repository.ArtistaMusicaleRepository;
 import Mudor.services.AlbumLiveService;
-import Mudor.services.ArtistaMusicaleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class AlbumLiveServiceImpl implements AlbumLiveService {
 
     @Autowired
     private AlbumLiveRepository albumLiveRepository;
 
     @Autowired
-    private ArtistaMusicaleService artistaMusicaleService;
+    private ArtistaMusicaleRepository artistaMusicaleRepository;
 
     @Override
     public AlbumLiveDTO mapTODTO(AlbumLive albumLive) {
@@ -44,12 +44,13 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
 
     @Override
     public AlbumLive mapToEntity(AlbumLiveDTO albumLiveDTO) {
+        ArtistaMusicale artistaMusicale = artistaMusicaleRepository.findById(albumLiveDTO.getIdArtistaMusicale()).orElseThrow(() -> new RuntimeException("Artista musicale non trovato"));
         AlbumLive albumLive = AlbumLive.builder()
                 .titoloAlbumLive(albumLiveDTO.getTitoloAlbumLive())
                 .dataRilascio(albumLiveDTO.getDataRilascio())
                 .brani(albumLiveDTO.getBrani())
                 .generi(albumLiveDTO.getGeneri())
-                .artistaMusicale(artistaMusicaleService.getArtistaMusicaleById(albumLiveDTO.getIdArtistaMusicale()))
+                .artistaMusicale(artistaMusicale)
                 .build();
         return null;
     }
@@ -85,7 +86,7 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
 
     @Override
     public void update(AlbumLiveDTO albumLiveDTO, Integer id) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(albumLiveDTO.getIdArtistaMusicale());
+        ArtistaMusicale artistaMusicale = artistaMusicaleRepository.findById(albumLiveDTO.getIdArtistaMusicale()).orElseThrow(() -> new RuntimeException("Artista musicale non trovato"));
         AlbumLive albumLiveRicercato = albumLiveRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album live ricercato non è presente"));
         albumLiveRicercato.setTitoloAlbumLive(albumLiveDTO.getTitoloAlbumLive() == null ? albumLiveRicercato.getTitoloAlbumLive() : albumLiveDTO.getTitoloAlbumLive());
         albumLiveRicercato.setDataRilascio(albumLiveDTO.getDataRilascio() == null ? albumLiveRicercato.getDataRilascio() : albumLiveDTO.getDataRilascio());

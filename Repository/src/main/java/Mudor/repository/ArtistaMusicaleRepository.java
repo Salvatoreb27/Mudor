@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface ArtistaMusicaleRepository extends JpaRepository<ArtistaMusicale, Integer> {
 
-    Optional<ArtistaMusicale> findByNomeArtistaMusicale(String nome);
+    Optional<ArtistaMusicale> findByNome(String nome);
 }

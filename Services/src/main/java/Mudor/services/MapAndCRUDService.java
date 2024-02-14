@@ -1,6 +1,9 @@
 package Mudor.services;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public interface MapAndCRUDService<DTOType, EntityType, IdType> {
     DTOType mapTODTO(EntityType entityType);
 

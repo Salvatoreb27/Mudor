@@ -8,10 +8,11 @@ import Mudor.entity.*;
 import Mudor.repository.ArtistaMusicaleRepository;
 import Mudor.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Service
 public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
     @Autowired
     private ArtistaMusicaleRepository artistaMusicaleRepository;
@@ -21,7 +22,6 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
     private AlbumLiveService albumLiveService;
     @Autowired
     private CrossArtistaSingoloService crossArtistaSingoloService;
-
     @Autowired
     private RaccoltaService raccoltaService;
 
@@ -37,7 +37,7 @@ public class ArtistaMusicaleServiceImpl implements ArtistaMusicaleService {
 
     @Override
     public ArtistaMusicale getArtistaMusicaleByNome(String nome) {
-        Optional<ArtistaMusicale> artistaMusicale = artistaMusicaleRepository.findByNomeArtistaMusicale(nome);
+        Optional<ArtistaMusicale> artistaMusicale = artistaMusicaleRepository.findByNome(nome);
         if (artistaMusicale.isPresent()) {
             return artistaMusicale.get();
         } else {

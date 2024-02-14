@@ -4,6 +4,7 @@ import Mudor.DTO.AlbumInStudioDTO;
 import Mudor.DTO.ArtistaMusicaleDTO;
 import Mudor.entity.*;
 import Mudor.repository.AlbumInStudioRepository;
+import Mudor.repository.ArtistaMusicaleRepository;
 import Mudor.services.AlbumInStudioService;
 import Mudor.services.ArtistaMusicaleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
     @Autowired
     private AlbumInStudioRepository albumInStudioRepository;
     @Autowired
-    private ArtistaMusicaleService artistaMusicaleService;
+    private ArtistaMusicaleRepository artistaMusicaleRepository;
 
 
     @Override
@@ -45,12 +46,13 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
 
     @Override
     public AlbumInStudio mapToEntity(AlbumInStudioDTO albumInStudioDTO) {
+        ArtistaMusicale artistaMusicale = artistaMusicaleRepository.findById(albumInStudioDTO.getIdArtistaMusicale()).orElseThrow(() -> new RuntimeException("Artista musicale non trovato"));
         AlbumInStudio albumInStudio = AlbumInStudio.builder()
                 .titoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio())
                 .dataRilascio(albumInStudioDTO.getDataRilascio())
                 .brani(albumInStudioDTO.getBrani())
                 .generi(albumInStudioDTO.getGeneri())
-                .artistaMusicale(artistaMusicaleService.getArtistaMusicaleById(albumInStudioDTO.getIdArtistaMusicale()))
+                .artistaMusicale(artistaMusicale)
                 .build();
         return null;
     }
@@ -86,7 +88,7 @@ public class AlbumInStudioServiceImpl implements AlbumInStudioService {
 
     @Override
     public void update(AlbumInStudioDTO albumInStudioDTO, Integer id) {
-        ArtistaMusicale artistaMusicale = artistaMusicaleService.getArtistaMusicaleById(albumInStudioDTO.getIdArtistaMusicale());
+        ArtistaMusicale artistaMusicale = artistaMusicaleRepository.findById(albumInStudioDTO.getIdArtistaMusicale()).orElseThrow(() -> new RuntimeException("Artista musicale non trovato"));
         AlbumInStudio albumInStudioRicercato = albumInStudioRepository.findById(id).orElseThrow(() -> new RuntimeException("L'album in studio ricercato non è presente"));
         albumInStudioRicercato.setTitoloAlbumInStudio(albumInStudioDTO.getTitoloAlbumInStudio() == null ? albumInStudioRicercato.getTitoloAlbumInStudio() : albumInStudioDTO.getTitoloAlbumInStudio());
         albumInStudioRicercato.setDataRilascio(albumInStudioDTO.getDataRilascio() == null ? albumInStudioRicercato.getDataRilascio() : albumInStudioDTO.getDataRilascio());

@@ -1,25 +1,24 @@
 package Mudor.servicesimpl;
 
-import Mudor.DTO.AlbumLiveDTO;
-import Mudor.DTO.ArtistaMusicaleDTO;
-import Mudor.DTO.RaccoltaDTO;
+
 import Mudor.DTO.SingoloDTO;
 import Mudor.entity.*;
 import Mudor.repository.SingoloRepository;
 import Mudor.services.CrossArtistaSingoloService;
 import Mudor.services.SingoloService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class SingoloServiceImpl implements SingoloService {
 
     @Autowired
     private SingoloRepository singoloRepository;
-
     @Autowired
     private CrossArtistaSingoloService crossArtistaSingoloService;
 
