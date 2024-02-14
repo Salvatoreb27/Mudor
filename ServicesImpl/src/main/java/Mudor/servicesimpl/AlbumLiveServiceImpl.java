@@ -1,15 +1,22 @@
 package Mudor.servicesimpl;
 
+import Mudor.DTO.AlbumInStudioDTO;
 import Mudor.DTO.AlbumLiveDTO;
+import Mudor.entity.AlbumInStudio;
 import Mudor.entity.AlbumLive;
 import Mudor.entity.ArtistaMusicale;
+import Mudor.entity.spec.AlbumInStudioSpecifications;
+import Mudor.entity.spec.AlbumLiveSpecifications;
 import Mudor.repository.AlbumLiveRepository;
 import Mudor.repository.ArtistaMusicaleRepository;
 import Mudor.services.AlbumLiveService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -102,5 +109,41 @@ public class AlbumLiveServiceImpl implements AlbumLiveService {
             albumLiveRepository.deleteById(id);
         }
     }
+    private List<Specification<AlbumLive>> createSpecifications(Integer idAlbumLive, String titoloAlbumLive, Date dataRilascio, List<String> brani, List<String> generi, String nome) {
+        List<Specification<AlbumLive>> specifications = new ArrayList<>();
+        if (idAlbumLive != null) {
+            specifications.add(AlbumLiveSpecifications.likeIdAlbumLive(idAlbumLive));
+        }
+        if (titoloAlbumLive != null) {
+            specifications.add(AlbumLiveSpecifications.likeTitoloAlbumLive(titoloAlbumLive));
+        }
+        if (dataRilascio != null) {
+            specifications.add(AlbumLiveSpecifications.likeDataRilascio(dataRilascio));
+        }
+        if (brani != null) {
+            specifications.add(AlbumLiveSpecifications.likeBrani(brani));
+        }
+        if (generi != null) {
+            specifications.add(AlbumLiveSpecifications.likeGeneri(generi));
+        }
+        if (nome != null) {
+            specifications.add(AlbumLiveSpecifications.likeArtistaAlbum(nome));
+        }
+        return specifications;
+    }
+    private Specification<AlbumLive> combineSpecifications(List<Specification<AlbumLive>> specifications) {
+        return specifications.stream().reduce(Specification::and).orElse(null);
+    }
 
+    @Override
+    public List<AlbumLiveDTO> getAlbumLiveBy(Integer idAlbumLive, String titoloAlbumLive, Date dataRilascio, List<String> brani, List<String> generi, String nome) {
+        List<Specification<AlbumLive>> specifications = createSpecifications(idAlbumLive, titoloAlbumLive, dataRilascio, brani, generi, nome);
+        Specification<AlbumLive> combinedSpecification = combineSpecifications(specifications);
+
+        List<AlbumLive> listaAlbumLive = albumLiveRepository.findAll((Sort) combinedSpecification);
+
+        return listaAlbumLive.stream()
+                .map(this::mapTODTO)
+                .collect(Collectors.toList());
+    }
 }

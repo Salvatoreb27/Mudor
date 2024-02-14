@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface SingoloRepository extends JpaRepository<Singolo, Integer> {
     Optional<Singolo> findByTitoloSingolo(String titoloSingolo);
+
+
 }

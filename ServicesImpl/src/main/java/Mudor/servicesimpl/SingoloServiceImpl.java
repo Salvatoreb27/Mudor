@@ -1,15 +1,21 @@
 package Mudor.servicesimpl;
 
 
+import Mudor.DTO.RaccoltaDTO;
 import Mudor.DTO.SingoloDTO;
 import Mudor.entity.*;
+import Mudor.entity.spec.RaccoltaSpecifications;
+import Mudor.entity.spec.SingoloSpecifications;
 import Mudor.repository.SingoloRepository;
 import Mudor.services.CrossArtistaSingoloService;
 import Mudor.services.SingoloService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -108,6 +114,44 @@ public class SingoloServiceImpl implements SingoloService {
         } else {
             return null;
         }
+    }
+
+    private List<Specification<Singolo>> createSpecifications(Integer idSingolo, String titoloSingolo, Date dataRilascio, List<String> brani, List<String> generi, String nome) {
+        List<Specification<Singolo>> specifications = new ArrayList<>();
+        if (idSingolo != null) {
+            specifications.add(SingoloSpecifications.likeIdSingolo(idSingolo));
+        }
+        if (titoloSingolo != null) {
+            specifications.add(SingoloSpecifications.likeTitoloSingolo(titoloSingolo));
+        }
+        if (dataRilascio != null) {
+            specifications.add(SingoloSpecifications.likeDataRilascio(dataRilascio));
+        }
+        if (brani != null) {
+            specifications.add(SingoloSpecifications.likeBrani(brani));
+        }
+        if (generi != null) {
+            specifications.add(SingoloSpecifications.likeGeneri(generi));
+        }
+        if (nome != null) {
+            specifications.add(SingoloSpecifications.likeArtistaSingolo(nome));
+        }
+        return specifications;
+    }
+    private Specification<Singolo> combineSpecifications(List<Specification<Singolo>> specifications) {
+        return specifications.stream().reduce(Specification::and).orElse(null);
+    }
+
+    @Override
+    public List<SingoloDTO> getSingoloBy(Integer idSingolo, String titoloSingolo, Date dataRilascio, List<String> brani, List<String> generi, String nome) {
+        List<Specification<Singolo>> specifications = createSpecifications(idSingolo, titoloSingolo, dataRilascio, brani, generi, nome);
+        Specification<Singolo> combinedSpecification = combineSpecifications(specifications);
+
+        List<Singolo> listaSingoli= singoloRepository.findAll((Sort) combinedSpecification);
+
+        return listaSingoli.stream()
+                .map(this::mapTODTO)
+                .collect(Collectors.toList());
     }
 
 }

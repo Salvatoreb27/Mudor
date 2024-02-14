@@ -1,18 +1,14 @@
 package Mudor.services;
 
+import Mudor.DTO.AlbumInStudioDTO;
 import Mudor.DTO.RaccoltaDTO;
 import Mudor.entity.Raccolta;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
+
 @Service
 public interface RaccoltaService extends MapAndCRUDService<RaccoltaDTO, Raccolta, Integer> {
-//    RaccoltaDTO mapTORaccoltaDTO(Raccolta raccolta);
-//    List<RaccoltaDTO> mapTORaccoltaDTOList(List<Raccolta> raccoltaList);
-//    Raccolta mapToRaccolta(RaccoltaDTO raccoltaDTO);
-//    List<Raccolta> mapTORaccoltaList(List<RaccoltaDTO> raccoltaDTOList);
-//    List<RaccoltaDTO> getRaccolte();
-//    RaccoltaDTO getRaccolta(Integer id);
-//    void addRaccolta(RaccoltaDTO artistaMusicaleDTO);
-//    void updateRaccolta(RaccoltaDTO artistaMusicaleDTO, Integer id);
-//    void deleteRaccolta(Integer id);
+    List<RaccoltaDTO> getRaccoltaBy(Integer idRaccolta, String titoloRaccolta, Date dataRilascio, List<String> brani, List<String> generi, String nome);
 }
