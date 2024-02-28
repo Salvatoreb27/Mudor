@@ -239,7 +239,9 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     public List<String> getAlbumsInfoMusicBrainz(String name) {
 
         String idMusicBrainz = null;
+
         String kind = "Album";
+
         List<String> idMusicBrainzList = new ArrayList<>();
 
         List<Release> artistReleaseGroups = releaseService.getReleasesByKindAndArtistsName(kind, name);
@@ -251,7 +253,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         List<String> releasesJsonResponses = new ArrayList<>();
 
         for (String id : idMusicBrainzList) {
-            
+
             try {
                 Thread.sleep(1000);
 
@@ -270,25 +272,11 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     @Transactional
     public List<String> getAlbumReleasesOfReleaseGroup(String name) {
 
-        //Ottengo tutte le release group per nome
-        List<Release> releasesByArtist = releaseService.getReleasesByArtistName(name);
-
-        //vado a vedere quali di queste sono album
-        List<Release> albumReleaseByArtist = new ArrayList<>();
-
-        for (Release release : releasesByArtist) {
-            if (release.getKind().equalsIgnoreCase("Album")) {
-                albumReleaseByArtist.add(release);
-            }
-        }
-
-        List<String> jsonResponses = new ArrayList<>();
-
+        List<String> jsonResponses;
         List<String> firstReleasesOfAllAlbums = new ArrayList<>();
 
 
         try {
-            //Ottengo i dati per accedere agli id delle first release
 
             Thread.sleep(1000);
             jsonResponses = getAlbumsInfoMusicBrainz(name);
@@ -308,14 +296,10 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     JSONObject firstRelease = releasesArray.getJSONObject(0);
                     String firstReleaseId = firstRelease.getString("id");
                     firstReleasesOfAllAlbums.add(firstReleaseId);
-                    System.out.println("ID della prima release: " + firstReleaseId);
 
                     Release release = releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz);
                     release.setIdReleaseMusicBrainz(firstReleaseId);
                     releaseService.updateByEntity(release, release.getIdRelease());
-
-                } else {
-                    System.out.println("Nessuna release trovata nel JSON.");
                 }
             }
 
@@ -337,7 +321,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
     @Transactional
     public void mudorConstruct(String name) {
-
 
         try {
             Thread.sleep(1000);
@@ -408,7 +391,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
                 List<String> genresList = new ArrayList<>();
 
-
                 JsonNode genres = releaseGroup.get("genres");
                 for (JsonNode genre : genres) {
                     String genreName = genre.get("name").asText();
@@ -416,9 +398,9 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     System.out.println("Genre: " + genreName);
                 }
 
-
                 List<String> tracksFakeList = new ArrayList<>();
                 List<ArtistDTO> artistDTOFakeList = new ArrayList<>();
+
                 ReleaseDTO releaseDTO = ReleaseDTO.builder()
                         .title(albumTitle)
                         .idReleaseGroupMusicBrainz(idReleaseGroupMusicBrainz)
@@ -438,25 +420,11 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     Release releaseSaved = releaseService.add(releaseDTO);
                     releaseList.add(releaseSaved);
                 }
-
-                for (Release release : releaseList) {
-                    release.setArtists(artistList);
-                }
-
-                System.out.println("albumTitle: " + albumTitle);
-                System.out.println("date: " + releaseDate);
-                System.out.println("genresList: " + genresList);
-                System.out.println("kind: " + kind);
             }
 
-            for (Artist artist : artistList) {
-                artist.setReleases(releaseList);
-            }
 
-            System.out.println("ID: " + idMusicBrainz);
-            System.out.println("ArtistName: " + artistName);
-            System.out.println("Country: " + country);
-            System.out.println("Disambiguation: " + disambiguation);
+
+
 
 
         } catch (JsonMappingException e) {
