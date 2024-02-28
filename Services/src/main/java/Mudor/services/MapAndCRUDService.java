@@ -17,7 +17,7 @@ public interface MapAndCRUDService<DTOType, EntityType, IdType> {
 
     DTOType getDTO(IdType id);
 
-    void add(DTOType DTO);
+    EntityType add(DTOType DTO);
 
     void update(DTOType DTO, IdType id);
 
