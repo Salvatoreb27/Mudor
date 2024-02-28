@@ -124,8 +124,13 @@ public class ReleaseServiceImpl implements ReleaseService {
         return releaseRepository.findAll();
     }
 
-    public List<Release> findReleasesByArtistName(String artistName) {
+    public List<Release> getReleasesByArtistName(String artistName) {
         return releaseRepository.findByArtistsName(artistName);
+    }
+
+    @Override
+    public List<Release> getReleasesByKindAndArtistsName(String kind, String artistName) {
+        return releaseRepository.findByKindAndArtistsName(kind, artistName);
     }
 
     @Override

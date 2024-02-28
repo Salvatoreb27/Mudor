@@ -15,6 +15,7 @@ public interface ReleaseRepository extends JpaRepository<Release, Integer> {
 
     Optional<Release> findByTitle(String title);
 
+    List <Release> findByKindAndArtistsName (String kind, String artistName);
     List<Release> findByKind (String kind);
     List<Release> findByArtistsName(String artistName);
 
