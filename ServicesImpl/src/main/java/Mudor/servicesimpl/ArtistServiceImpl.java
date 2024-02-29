@@ -118,7 +118,7 @@ public class ArtistServiceImpl implements ArtistService {
 
 
     @Override
-    public void update(ArtistDTO artistDTO, Integer id) {
+    public Artist update(ArtistDTO artistDTO, Integer id) {
         List<Release> releaseList = releaseService.mapTOEntityList(artistDTO.getReleaseDTOList());
         Artist searchedArtist = artistRepository.findById(id).orElseThrow(() -> new RuntimeException("L'Artista ricercato non è presente"));
         searchedArtist.setIdArtistMusicBrainz(artistDTO.getIdArtistMusicBrainz() == null ? searchedArtist.getIdArtistMusicBrainz() : artistDTO.getIdArtistMusicBrainz());
@@ -128,7 +128,7 @@ public class ArtistServiceImpl implements ArtistService {
         searchedArtist.setGenres(artistDTO.getGenres() == null ? searchedArtist.getGenres() : artistDTO.getGenres());
         searchedArtist.setCountry(artistDTO.getCountry() == null ? searchedArtist.getCountry() : artistDTO.getCountry());
         searchedArtist.setReleases(releaseList == null ? searchedArtist.getReleases() : releaseList);
-        artistRepository.save(searchedArtist);
+        return artistRepository.save(searchedArtist);
     }
 
 

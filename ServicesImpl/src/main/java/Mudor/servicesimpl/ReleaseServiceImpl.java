@@ -182,7 +182,7 @@ public class ReleaseServiceImpl implements ReleaseService {
     }
 
     @Override
-    public void update(ReleaseDTO releaseDTO, Integer id) {
+    public Release update(ReleaseDTO releaseDTO, Integer id) {
         List<Artist> artistList = mapTOArtistEntityList(releaseDTO.getArtistDTOList());
         Release searchedRelease = releaseRepository.findById(id).orElseThrow(() -> new RuntimeException("La release ricercata non è presente"));
         searchedRelease.setIdReleaseGroupMusicBrainz(releaseDTO.getIdReleaseGroupMusicBrainz() == null ? searchedRelease.getIdReleaseGroupMusicBrainz() : releaseDTO.getIdReleaseGroupMusicBrainz());
@@ -194,7 +194,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         searchedRelease.setTracks(releaseDTO.getTracks() == null ? searchedRelease.getTracks() : releaseDTO.getTracks());
         searchedRelease.setGenres(releaseDTO.getGenres() == null ? searchedRelease.getGenres() : releaseDTO.getGenres());
         searchedRelease.setArtists(artistList == null ? searchedRelease.getArtists() : artistList);
-        releaseRepository.save(searchedRelease);
+        return releaseRepository.save(searchedRelease);
     }
 
     public void updateByEntity(Release release, Integer id) {

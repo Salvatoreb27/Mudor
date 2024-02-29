@@ -19,7 +19,7 @@ public interface MapAndCRUDService<DTOType, EntityType, IdType> {
 
     EntityType add(DTOType DTO);
 
-    void update(DTOType DTO, IdType id);
+    EntityType update(DTOType DTO, IdType id);
 
     void delete(IdType id);
 }

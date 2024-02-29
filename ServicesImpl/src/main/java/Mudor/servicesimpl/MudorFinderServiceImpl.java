@@ -390,9 +390,11 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     .country(country)
                     .build();
             Artist artistSaved;
+            Artist artistUpdated;
             if (artistService.getArtistByIdMusicBrainz(idMusicBrainz) != null) {
                 Integer id = artistService.getArtistByIdMusicBrainz(idMusicBrainz).getIdArtist();
-                artistService.update(artistDTO, id);
+                artistUpdated = artistService.update(artistDTO, id);
+                artistList.add(artistUpdated);
 
             } else {
                 artistSaved = artistService.add(artistDTO);
@@ -501,23 +503,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     RestTemplate restTemplate = new RestTemplate();
                     String jsonResponse = restTemplate.getForObject("https://musicbrainz.org/ws/2/release/" + releaseId + "?inc=recordings&fmt=json", String.class);
 
-                    JSONObject jsonObject = new JSONObject(jsonResponse);
-
-                    JSONArray mediaArray = jsonObject.getJSONArray("media");
-                    List<String> trackTitles = new ArrayList<>();
-                    for (int i = 0; i < mediaArray.length(); i++) {
-
-                        //Per ciascun album andiamo a vedere quali sono i relativi brani
-                        JSONObject mediaObject = mediaArray.getJSONObject(i);
-                        JSONArray tracksArray = mediaObject.getJSONArray("tracks");
-                        for (int j = 0; j < tracksArray.length(); j++) {
-                            JSONObject trackObject = tracksArray.getJSONObject(j);
-                            String title = trackObject.getString("title");
-                            trackTitles.add(title);
-
-
-                        }
-                    }
+                    List<String> trackTitles = getTrackTitles(jsonResponse);
                     for (Release release : albumReleaseByArtist) {
                         if (release.getIdReleaseMusicBrainz().equals(releaseId)) {
                             release.setTracks(trackTitles);
@@ -533,152 +519,27 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
 
         }
+
+    private static List<String> getTrackTitles(String jsonResponse) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsonResponse);
+
+        JSONArray mediaArray = jsonObject.getJSONArray("media");
+        List<String> trackTitles = new ArrayList<>();
+        for (int i = 0; i < mediaArray.length(); i++) {
+
+            //Per ciascun album andiamo a vedere quali sono i relativi brani
+            JSONObject mediaObject = mediaArray.getJSONObject(i);
+            JSONArray tracksArray = mediaObject.getJSONArray("tracks");
+            for (int j = 0; j < tracksArray.length(); j++) {
+                JSONObject trackObject = tracksArray.getJSONObject(j);
+                String title = trackObject.getString("title");
+                trackTitles.add(title);
+
+
+            }
+        }
+        return trackTitles;
     }
-
-//    public void mudorConstruct(String name) {
-//
-//        //Definizione del JSON della pagina Music Brainz Dell'Artista
-//        String singerPageJson = String.valueOf(searchSingerPageMusicBrainz(name));
-//
-//        //Formattazione date per il parsin della data
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-//        try {
-//
-//            //Qui otteniamo i titoli di tutti gli album pubblicati dall'artista
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            JsonNode jsonNode = objectMapper.readTree(singerPageJson);
-//            JsonNode releaseGroups = jsonNode.get("release-groups");
-//
-//            //Per ciascun album ci prendiamo il titolo e la data di rilascio
-//            for (JsonNode releaseGroup : releaseGroups) {
-//                if (!isCompilationAlbum(releaseGroup) && !isLiveAlbum(releaseGroup) && !isSingleAlbum(releaseGroup) && !isDemoAlbum(releaseGroup)) {
-//                    String albumTitle = releaseGroup.get("title").asText();
-//                    String releaseDate = releaseGroup.get("first-release-date").asText();
-//
-//                    //Per ciascun album creiamo un nuovo oggetto album
-//                    AlbumInStudioDTO albumInStudioDTO = new AlbumInStudioDTO();
-//
-//                    //Per ciascun album settiamo qual'è l'id di music brainz dell'artista
-//                    albumInStudioDTO.setIdAlbumInStudioMusicBrainz(getSingerIdMusicBrainz(name));
-//
-//                    //Per ciascun album settiamo il titolo
-//                    albumInStudioDTO.setTitoloAlbumInStudio(albumTitle);
-//
-//                    //Per ciascun album settiamo la data di rilascio
-//                    Date date = dateFormat.parse(releaseDate);
-//                    albumInStudioDTO.setDataRilascio(date);
-//
-//                    List<String> genresList = new ArrayList<>();
-//
-//                    //Per ciascun album andiamo a vedere quali sono i generi
-//                    JSONObject jsonGenreObject = new JSONObject(singerPageJson);
-//                    JSONArray releaseGroupsArray = jsonGenreObject.getJSONArray("release-groups");
-//
-//                    for (int i = 0; i < releaseGroupsArray.length(); i++) {
-//                        JSONObject releaseGroupObject = releaseGroupsArray.getJSONObject(i);
-//                        JSONArray genres = releaseGroupObject.getJSONArray("genres");
-//
-//                        for (int j = 0; j < genres.length(); j++) {
-//                            JSONObject genre = genres.getJSONObject(j);
-//                            String genreName = genre.getString("name");
-//                            genresList.add(genreName);
-//                        }
-//                    }
-//                    //Per ciascun album settiamo la lista di generi
-//                    albumInStudioDTO.setGeneri(genresList);
-//
-//                    //Per ciascun album andiamo a vedere qual è la release specifica
-//                    List<String> releasesIds = getReleasesOfReleaseGroup(name);
-//                    for (String releaseId : releasesIds) {
-//                        RestTemplate restTemplate = new RestTemplate();
-//                        String jsonResponse = restTemplate.getForObject("https://musicbrainz.org/ws/2/release/" + releaseId + "?inc=recordings&fmt=json", String.class);
-//
-//                        JSONObject jsonObject = new JSONObject(jsonResponse);
-//                        JSONArray mediaArray = jsonObject.getJSONArray("media");
-//                        List<String> trackTitles = new ArrayList<>();
-//                        for (int i = 0; i < mediaArray.length(); i++) {
-//
-//                            //Per ciascun album andiamo a vedere quali sono i relativi brani
-//                            JSONObject mediaObject = mediaArray.getJSONObject(i);
-//                            JSONArray tracksArray = mediaObject.getJSONArray("tracks");
-//                            for (int j = 0; j < tracksArray.length(); j++) {
-//                                JSONObject trackObject = tracksArray.getJSONObject(j);
-//                                String title = trackObject.getString("title");
-//                                trackTitles.add(title);
-//                            }
-//                        }
-//                        //Per ciascun album settiamo gli stessi brani della relativa release
-//                        albumInStudioDTO.setBrani(trackTitles);
-//                    }
-//                    //Infine salviamo l'album
-//                    albumInStudioService.add(albumInStudioDTO);
-//                }
-//            }
-//        } catch (JsonMappingException e) {
-//            throw new RuntimeException(e);
-//        } catch (ParseException e) {
-//            throw new RuntimeException(e);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        } catch (JSONException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//}
-
-
-//        public Object searchDiscographySpecPage (String name){
-//            name = getArtistNameFromJson(name);
-//            RestTemplate restTemplate = new RestTemplate();
-//            String jsonString = "";
-//            if (name.contains(" (cantante)")) {
-//                name = name.replace(" (cantante)", "");
-//            } else if (name.contains("(gruppo musicale)")) {
-//                name = name.replace("(gruppo musicale)", "");
-//                if (name.contains("The")) {
-//                    name = name.replace("The", "");
-//                }
-//            } else if (name.contains("(rapper)")) {
-//                name = name.replace("(rapper)", "");
-//            }
-//            jsonString = restTemplate.getForObject("https://it.wikipedia.org/w/api.php?action=parse&page=Discografia_di_" + name + "&format=json", String.class);
-//            if (jsonString.contains("error")) {
-//
-//                char firstChar = Character.toLowerCase(name.charAt(0));
-//                if (firstChar == 'a' || firstChar == 'e' || firstChar == 'i' || firstChar == 'o' || firstChar == 'u') {
-//                    jsonString = restTemplate.getForObject("https://it.wikipedia.org/w/api.php?action=parse&page=Discografia_degli_" + name + "&format=json", String.class);
-//                } else {
-//                    jsonString = restTemplate.getForObject("https://it.wikipedia.org/w/api.php?action=parse&page=Discografia_dei_" + name + "&format=json", String.class);
-//                    if (jsonString.contains("error")) {
-//                        jsonString = restTemplate.getForObject("https://it.wikipedia.org/w/api.php?action=parse&page=Discografia_delle_" + name + "&format=json", String.class);
-//                    }
-//                }
-//            }
-//            return jsonString;
-//        }
-
-//    public Object createJsonForEveryAlbumInStudioOfArtist(String name) {
-//        RestTemplate restTemplate = new RestTemplate();
-//        List<String> albumsInStudio = extractAlbumTitles(name);
-//        List<String> jsonsOfAlbums = null;
-//        if (name.contains("(cantante)")){
-//            name.replace("(cantante)", "");
-//
-//        }
-//        for (String album : albumsInStudio) {
-//            String jsonString = restTemplate.getForObject("https://it.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=" + album + "_(" + name + ")", String.class);
-//            jsonsOfAlbums.add(jsonString);
-//        }
-//
-//        return jsonsOfAlbums;
-//    }
-//    }
-//    public List<AlbumInStudio> popolaDiscografiaConAlbumInStudio (String name) {
-//        List<String> albumsInStudio = extractAlbumTitles(name);
-//        RestTemplate restTemplate = new RestTemplate();
-//        for (String album : albumsInStudio) {
-//        }
-//        return null;
-//    }
+}
 
 
