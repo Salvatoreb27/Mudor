@@ -91,4 +91,28 @@ public class ReleaseSpecifications {
             return criteriaBuilder.equal(ReleaseArtistJoin.get("name"), name);
         };
     }
+
+    public static Specification<Release> findByKindAndArtistsName(String kind, String name) {
+        return (root, query, cb) -> {
+            Join<Release, Artist> releaseArtistJoin = root.join("artists");
+
+            return cb.and(
+                    cb.equal(releaseArtistJoin.get("name"), name),
+                    cb.equal(root.get("kind"), kind)
+            );
+        };
+    }
+
+
+//    public static Specification<Release> findByKindAndArtistsName(String kind, String artistName) {
+//        return (root, query, cb) -> {
+//
+//            root.join("artists");
+//
+//            return cb.and(
+//                    cb.equal(root.get("kind"), kind),
+//                    cb.equal(root.get("artists").get("name"), artistName)
+//            );
+//        };
+//    }
 }

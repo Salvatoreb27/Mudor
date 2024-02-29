@@ -131,6 +131,21 @@ public class ArtistServiceImpl implements ArtistService {
         artistRepository.save(searchedArtist);
     }
 
+
+    @Override
+    public void updateByEntity(Artist artist, Integer id) {
+        List<Release> releaseList = artist.getReleases();
+        Artist searchedArtist = artistRepository.findById(id).orElseThrow(() -> new RuntimeException("L'Artista ricercato non è presente"));
+        searchedArtist.setIdArtistMusicBrainz(artist.getIdArtistMusicBrainz() == null ? searchedArtist.getIdArtistMusicBrainz() : artist.getIdArtistMusicBrainz());
+        searchedArtist.setName(artist.getName() == null ? searchedArtist.getName() : artist.getName());
+        searchedArtist.setRelationURLs(artist.getRelationURLs() == null ? searchedArtist.getRelationURLs() : artist.getRelationURLs());
+        searchedArtist.setDescription(artist.getDescription() == null ? searchedArtist.getDescription() : artist.getDescription());
+        searchedArtist.setGenres(artist.getGenres() == null ? searchedArtist.getGenres() : artist.getGenres());
+        searchedArtist.setCountry(artist.getCountry() == null ? searchedArtist.getCountry() : artist.getCountry());
+        searchedArtist.setReleases(releaseList == null ? searchedArtist.getReleases() : releaseList);
+        artistRepository.save(searchedArtist);
+    }
+
     @Override
     public void delete(Integer id) {
         if (artistRepository.existsById(id)) {

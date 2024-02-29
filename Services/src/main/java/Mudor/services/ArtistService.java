@@ -2,6 +2,7 @@ package Mudor.services;
 
 import Mudor.DTO.ArtistDTO;
 import Mudor.entity.Artist;
+import Mudor.entity.Release;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public interface ArtistService extends MapAndCRUDService<ArtistDTO, Artist, Inte
 
     Artist getArtistById(Integer id);
     Artist getArtistByName(String name);
+
+    void updateByEntity(Artist artist, Integer id);
     Artist getArtistByIdMusicBrainz (String idMusicBrainz);
     List<ArtistDTO> getArtistBy(Integer idArtist, String idArtistMusicBrainz, String name, String description, String country, List<String> genres, String title);
 }

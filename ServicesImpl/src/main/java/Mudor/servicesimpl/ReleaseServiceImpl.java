@@ -8,10 +8,10 @@ import Mudor.entity.spec.ReleaseSpecifications;
 import Mudor.repository.ArtistRepository;
 import Mudor.repository.ReleaseRepository;
 import Mudor.services.ReleaseService;
-import com.mysql.cj.Session;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.hibernate.query.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -128,10 +128,10 @@ public class ReleaseServiceImpl implements ReleaseService {
         return releaseRepository.findByArtistsName(artistName);
     }
 
-    @Override
-    public List<Release> getReleasesByKindAndArtistsName(String kind, String artistName) {
-        return releaseRepository.findByKindAndArtistsName(kind, artistName);
-    }
+//    @Override
+//    public List<Release> getReleasesByKindAndArtistsName(String kind, String artistName) {
+//        return releaseRepository.findByKindAndArtistsName(kind, artistName);
+//    }
 
     @Override
     public List<Release> findReleasesByKind(String kind) {
@@ -218,6 +218,20 @@ public class ReleaseServiceImpl implements ReleaseService {
         }
     }
 
+    private Specification<Release> createkindAndArtistSpecification(String kind, String artistName) {
+        return Specification.where(ReleaseSpecifications.findByKindAndArtistsName(kind, artistName));
+    }
+
+    @Override
+
+    public List<Release> getReleasesByKindAndArtistsName(String kind, String artistName) {
+        Specification<Release> specifications = createkindAndArtistSpecification(kind, artistName);
+        List<Release> releaseList = releaseRepository.findAll(specifications);
+
+        return releaseList.stream()
+                .collect(Collectors.toList());
+    }
+
     private List<Specification<Release>> createSpecifications(Integer idRelease, String idReleaseMusicBrainz, String title, String kind, String coverArt, String dateOfRelease, List<String> tracks, List<String> genres, String name) {
         List<Specification<Release>> specifications = new ArrayList<>();
         if (idRelease != null) {
@@ -253,6 +267,7 @@ public class ReleaseServiceImpl implements ReleaseService {
     private Specification<Release> combineSpecifications(List<Specification<Release>> specifications) {
         return specifications.stream().reduce(Specification::and).orElse(null);
     }
+
 
 
 

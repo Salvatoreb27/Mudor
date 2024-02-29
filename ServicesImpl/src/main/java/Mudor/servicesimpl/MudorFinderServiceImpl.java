@@ -140,9 +140,13 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     }
 
     private static boolean isAlbum(JsonNode releaseGroup) {
-        if ("Album".equals(releaseGroup.get("primary-type"))) {
+        JsonNode primaryTypeNode = releaseGroup.get("primary-type");
+
+        if (primaryTypeNode != null && "Album".equals(primaryTypeNode.textValue())) {
             JsonNode secondaryTypesNode = releaseGroup.get("secondary-types");
-            if (secondaryTypesNode == null) {
+
+            if (secondaryTypesNode != null && secondaryTypesNode.size() == 0) {
+
                 return true;
             } else {
                 return false;
@@ -151,6 +155,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             return false;
         }
     }
+
 
 
     private static boolean isCompilationAlbum(JsonNode releaseGroup) {
@@ -301,7 +306,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         List<String> jsonResponses;
         List<String> firstReleasesOfAllAlbums = new ArrayList<>();
 
-
         try {
 
             Thread.sleep(1000);
@@ -349,6 +353,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     public void mudorConstruct(String name) {
 
         try {
+
             Thread.sleep(1000);
             String singerPageJson = String.valueOf(searchSingerPageMusicBrainz(name));
             ObjectMapper artistMapper = new ObjectMapper();
@@ -384,13 +389,13 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     .releaseDTOList(releaseDTOFakeList)
                     .country(country)
                     .build();
-
+            Artist artistSaved;
             if (artistService.getArtistByIdMusicBrainz(idMusicBrainz) != null) {
                 Integer id = artistService.getArtistByIdMusicBrainz(idMusicBrainz).getIdArtist();
                 artistService.update(artistDTO, id);
 
             } else {
-                Artist artistSaved = artistService.add(artistDTO);
+                artistSaved = artistService.add(artistDTO);
                 artistList.add(artistSaved);
             }
 
@@ -448,15 +453,26 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                         .artistDTOList(artistDTOFakeList)
                         .build();
 
+                Release releaseSaved;
+
                 if (releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz) != null) {
                     Integer id = releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz).getIdRelease();
                     releaseService.update(releaseDTO, id);
 
                 } else {
-                    Release releaseSaved = releaseService.add(releaseDTO);
+                    releaseSaved = releaseService.add(releaseDTO);
                     releaseList.add(releaseSaved);
                 }
             }
+            for (Release release : releaseList) {
+                release.setArtists(artistList);
+                releaseService.updateByEntity(release, release.getIdRelease());
+            }
+
+        for (Artist artist : artistList) {
+            artist.setReleases(releaseList);
+            artistService.updateByEntity(artist, artist.getIdArtist());
+        }
 
         } catch(JsonMappingException e){
                 throw new RuntimeException(e);
@@ -471,15 +487,9 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         public void constructTracksForAlbumsOfArtist (String name){
 
-            List<Release> releasesByArtist = releaseService.getReleasesByArtistName(name);
+            String kind = "Album";
 
-            List<Release> albumReleaseByArtist = new ArrayList<>();
-
-            for (Release release : releasesByArtist) {
-                if (release.getKind().equalsIgnoreCase("Album")) {
-                    albumReleaseByArtist.add(release);
-                }
-            }
+            List<Release> albumReleaseByArtist = releaseService.getReleasesByKindAndArtistsName(kind, name);
 
             List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
 
@@ -503,7 +513,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                         for (int j = 0; j < tracksArray.length(); j++) {
                             JSONObject trackObject = tracksArray.getJSONObject(j);
                             String title = trackObject.getString("title");
-                            System.out.println(title);
                             trackTitles.add(title);
 
 
