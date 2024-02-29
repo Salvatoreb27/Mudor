@@ -43,16 +43,6 @@ public class MudorController {
         return mudorFinderServiceImpl.extractAlbumTitlesMusicBrainz(name);
     }
 
-    @GetMapping("/getAlbumInStudioInfo")
-    public Object getAlbumInStudioInfo(@RequestParam String name) {
-        return mudorFinderServiceImpl.getAlbumsInfoMusicBrainz(name);
-    }
-
-    @GetMapping("/getAllFirstReleases")
-    public Object getAllFirstReleases(@RequestParam String name) {
-        return mudorFinderServiceImpl.getAlbumReleasesOfReleaseGroup(name);
-    }
-
     @GetMapping("/mudorConstruct")
     public void mudorConstruct(@RequestParam String name) {
         mudorFinderServiceImpl.mudorConstruct(name);
@@ -60,13 +50,9 @@ public class MudorController {
 
     @GetMapping("/constructTracksForAlbumsOfArtist")
     public void constructTracksForAlbumsOfArtist(@RequestParam String name) {
-        mudorFinderServiceImpl.constructTracksForAlbumsOfArtist(name);
+        mudorFinderServiceImpl.constructTracksForArtist(name);
     }
-
-//    @PostMapping("/addAlbumsInStudioToMudor")
-//    public void addAlbumsInStudioToMudor(@RequestParam String name) {
-//        mudorFinderServiceImpl.addAlbumsInStudioToMudorDB(name);
-//    }
 }
+
 
 

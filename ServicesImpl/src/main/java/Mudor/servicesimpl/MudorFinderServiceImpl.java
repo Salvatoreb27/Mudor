@@ -19,6 +19,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
@@ -268,15 +273,16 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     }
 
 
-    public List<String> getAlbumsInfoMusicBrainz(String name) {
+    public List<String> getReleaseGroupInfoMusicBrainz(String name) {
 
         String idMusicBrainz = null;
 
-        String kind = "Album";
+
 
         List<String> idMusicBrainzList = new ArrayList<>();
 
-        List<Release> artistReleaseGroups = releaseService.getReleasesByKindAndArtistsName(kind, name);
+
+        List<Release> artistReleaseGroups = releaseService.getReleasesByArtistName(name);
 
         for (Release releaseGroup : artistReleaseGroups) {
             idMusicBrainz = releaseGroup.getIdReleaseGroupMusicBrainz();
@@ -309,7 +315,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         try {
 
             Thread.sleep(1000);
-            jsonResponses = getAlbumsInfoMusicBrainz(name);
+            jsonResponses = getReleaseGroupInfoMusicBrainz(name);
 
             for (String jsonResponse : jsonResponses) {
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -476,6 +482,8 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             artistService.updateByEntity(artist, artist.getIdArtist());
         }
 
+        constructTracksForArtist(name);
+
         } catch(JsonMappingException e){
                 throw new RuntimeException(e);
 
@@ -487,14 +495,13 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             }
         }
 
-        public void constructTracksForAlbumsOfArtist (String name){
+        public void constructTracksForArtist (String name){
 
-            String kind = "Album";
-
-            List<Release> albumReleaseByArtist = releaseService.getReleasesByKindAndArtistsName(kind, name);
-
-            List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
             try {
+            List<Release> albumReleaseByArtist = releaseService.getReleasesByArtistName(name);
+            Thread.sleep(1000);
+            List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
+
 
                 for (String releaseId : releasesIds) {
 
@@ -505,8 +512,10 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     List<String> trackTitles = getTrackTitles(jsonResponse);
                     for (Release release : albumReleaseByArtist) {
                         if (release.getIdReleaseMusicBrainz().equals(releaseId)) {
-                            release.setTracks(trackTitles);
-                            releaseService.updateByEntity(release, release.getIdRelease());
+                            if (release.getTracks().size() != trackTitles.size()) {
+                                release.setTracks(trackTitles);
+                                releaseService.updateByEntity(release, release.getIdRelease());
+                            }
                         }
                     }
                 }
@@ -539,6 +548,46 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             jsonException.printStackTrace();
         }
         return trackTitles;
+    }
+
+//    public void constructCoverArtForArtist (String name){
+//        try {
+//            List<Release> albumReleaseByArtist = releaseService.getReleasesByArtistName(name);
+//            Thread.sleep(1000);
+//            List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
+//
+//
+//                for (String releaseId : releasesIds) {
+//
+//                    Thread.sleep(1000);
+//                    RestTemplate restTemplate = new RestTemplate();
+//                    String htmlResponse = restTemplate.getForObject("https://musicbrainz.org/release/" + releaseId , String.class);
+//
+//                    File input = new File(htmlResponse);
+//
+//                    Document doc = Jsoup.parse(input, "UTF-8");
+//
+//                    Element coverArtDiv = doc.selectFirst("div.cover-art");
+//
+//                    String imageUrl = coverArtDiv.select("a.artwork-image").attr("href");
+//
+//                    for (Release release : albumReleaseByArtist) {
+//                        if (release.getIdReleaseMusicBrainz().equals(releaseId)) {
+//                            if (release.getCoverArt().isEmpty()) {
+//                                release.setCoverArt(imageUrl);
+//                                releaseService.updateByEntity(release, release.getIdRelease());
+//                            }
+//                        }
+//                    }
+//                }
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+
+
     }
 }
 
