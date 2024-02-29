@@ -52,6 +52,11 @@ public class MudorController {
     public void constructTracksForAlbumsOfArtist(@RequestParam String name) {
         mudorFinderServiceImpl.constructTracksForArtist(name);
     }
+
+    @GetMapping("/constructCoverForAlbumsOfArtist")
+    public void constructCoverForAlbumsOfArtist(@RequestParam String name) {
+        mudorFinderServiceImpl.constructCoverArtForArtist(name);
+    }
 }
 
 
