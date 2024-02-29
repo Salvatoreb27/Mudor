@@ -494,7 +494,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             List<Release> albumReleaseByArtist = releaseService.getReleasesByKindAndArtistsName(kind, name);
 
             List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
-
             try {
 
                 for (String releaseId : releasesIds) {
@@ -511,8 +510,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                         }
                     }
                 }
-            } catch (JSONException jsonException) {
-                jsonException.printStackTrace();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -520,23 +517,26 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         }
 
-    private static List<String> getTrackTitles(String jsonResponse) throws JSONException {
-        JSONObject jsonObject = new JSONObject(jsonResponse);
-
-        JSONArray mediaArray = jsonObject.getJSONArray("media");
+    private static List<String> getTrackTitles(String jsonResponse) {
         List<String> trackTitles = new ArrayList<>();
-        for (int i = 0; i < mediaArray.length(); i++) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            JSONArray mediaArray = jsonObject.getJSONArray("media");
 
-            //Per ciascun album andiamo a vedere quali sono i relativi brani
-            JSONObject mediaObject = mediaArray.getJSONObject(i);
-            JSONArray tracksArray = mediaObject.getJSONArray("tracks");
-            for (int j = 0; j < tracksArray.length(); j++) {
-                JSONObject trackObject = tracksArray.getJSONObject(j);
-                String title = trackObject.getString("title");
-                trackTitles.add(title);
+            for (int i = 0; i < mediaArray.length(); i++) {
 
-
+                //Per ciascun album andiamo a vedere quali sono i relativi brani
+                JSONObject mediaObject = mediaArray.getJSONObject(i);
+                JSONArray tracksArray = mediaObject.getJSONArray("tracks");
+                for (int j = 0; j < tracksArray.length(); j++) {
+                    JSONObject trackObject = tracksArray.getJSONObject(j);
+                    String title = trackObject.getString("title");
+                    trackTitles.add(title);
+                }
             }
+
+        }catch (JSONException jsonException) {
+            jsonException.printStackTrace();
         }
         return trackTitles;
     }
