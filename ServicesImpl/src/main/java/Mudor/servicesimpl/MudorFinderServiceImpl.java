@@ -76,7 +76,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         String artistId = null;
 
         try {
-            Thread.sleep(1000);
 
             String artistJson = String.valueOf(searchSingerMusicBrainz(name));
 
@@ -102,9 +101,9 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         String artistJson = null;
         try {
 
-            Thread.sleep(1000);
 
             String artistId = String.valueOf(getSingerIdMusicBrainz(name));
+
             String artistUrl = "http://musicbrainz.org/ws/2/artist/" + artistId + "?inc=url-rels+release-groups+genres&fmt=json";
 
             Thread.sleep(1000);
@@ -124,10 +123,11 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         try {
 
-            Thread.sleep(1000);
+
 
             RestTemplate restTemplate = new RestTemplate();
             String artistId = String.valueOf(getSingerIdMusicBrainz(name));
+            Thread.sleep(1000);
             String albumURL = "http://musicbrainz.org/ws/2/release?artist=" + artistId + "&type=album&status=official&fmt=json";
             albumsJson = restTemplate.getForObject(albumURL, String.class);
 
@@ -240,7 +240,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         List<String> albumList = new ArrayList<>();
 
         try {
-            Thread.sleep(1000);
             String singerPageJson = String.valueOf(searchSingerPageMusicBrainz(name));
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -257,8 +256,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         Collections.sort(albumList);
@@ -270,7 +267,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     public List<String> getReleaseGroupInfoMusicBrainz(String name) {
 
         String idMusicBrainz = null;
-
 
         List<String> idMusicBrainzList = new ArrayList<>();
 
@@ -307,7 +303,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         try {
 
-            Thread.sleep(1000);
             jsonResponses = getReleaseGroupInfoMusicBrainz(name);
 
             for (String jsonResponse : jsonResponses) {
@@ -341,8 +336,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         } catch (JsonProcessingException jsonProcessingException) {
             jsonProcessingException.printStackTrace();
 
-        } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
         }
         return firstReleasesOfAllAlbums;
     }
@@ -353,7 +346,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         try {
 
-            Thread.sleep(1000);
             String singerPageJson = String.valueOf(searchSingerPageMusicBrainz(name));
             ObjectMapper artistMapper = new ObjectMapper();
             JsonNode rootNode = artistMapper.readTree(singerPageJson);
@@ -484,8 +476,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
 
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -493,7 +483,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         try {
             List<Release> albumReleaseByArtist = releaseService.getReleasesByArtistName(name);
-            Thread.sleep(1000);
+
             List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
 
 
@@ -545,9 +535,9 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     }
 
     public void constructCoverArtForArtist(String name) {
-        try {
+
             List<Release> albumReleaseByArtist = releaseService.getReleasesByArtistName(name);
-            Thread.sleep(1000);
+
             List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
 
 
@@ -565,9 +555,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     }
                 }
             }
-        } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
-        }
     }
 }
 
