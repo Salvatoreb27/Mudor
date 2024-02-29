@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -342,7 +343,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
 
     @Transactional
-    public void mudorConstruct(String name) {
+    public ResponseEntity<String> mudorConstruct(String name) {
 
         try {
 
@@ -477,6 +478,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             throw new RuntimeException(e);
 
         }
+        return ResponseEntity.ok("Discografia dell'artista " + name + " aggiunta correttamente");
     }
 
     public void constructTracksForArtist(String name) {

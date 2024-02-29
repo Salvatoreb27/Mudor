@@ -2,6 +2,7 @@ package Mudor.controllers;
 
 import Mudor.servicesimpl.MudorFinderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.InetSocketAddress;
@@ -44,8 +45,8 @@ public class MudorController {
     }
 
     @GetMapping("/mudorConstruct")
-    public void mudorConstruct(@RequestParam String name) {
-        mudorFinderServiceImpl.mudorConstruct(name);
+    public ResponseEntity<String> mudorConstruct(@RequestParam String name) {
+       return mudorFinderServiceImpl.mudorConstruct(name);
     }
 
     @GetMapping("/constructTracksForAlbumsOfArtist")
