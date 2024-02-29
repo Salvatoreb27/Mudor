@@ -18,6 +18,8 @@ public class ArtistDTO {
 
     private String name;
 
+    private List<String> relationURLs;
+
     private String description;
 
     private List<String> genres;

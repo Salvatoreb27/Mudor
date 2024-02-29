@@ -26,6 +26,9 @@ public class Artist {
     @Column(name = "name")
     private String name;
 
+    @ElementCollection
+    private List<String> relationURLs;
+
     @Column(name = "description")
     private String description;
 

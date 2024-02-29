@@ -55,6 +55,7 @@ public class ArtistServiceImpl implements ArtistService {
         List<ReleaseDTO> releaseDTOList = releaseService.mapTODTOList(artist.getReleases());
         ArtistDTO artistDTO = ArtistDTO.builder()
                 .idArtistMusicBrainz(artist.getIdArtistMusicBrainz())
+                .relationURLs(artist.getRelationURLs())
                 .name(artist.getName())
                 .description(artist.getDescription())
                 .country(artist.getCountry())
@@ -76,6 +77,7 @@ public class ArtistServiceImpl implements ArtistService {
         List<Release> releaseList = releaseService.mapTOEntityList(artistDTO.getReleaseDTOList());
         Artist artist = Artist.builder()
                 .idArtistMusicBrainz(artistDTO.getIdArtistMusicBrainz())
+                .relationURLs(artistDTO.getRelationURLs())
                 .name(artistDTO.getName())
                 .description(artistDTO.getDescription())
                 .genres(artistDTO.getGenres())
@@ -121,6 +123,7 @@ public class ArtistServiceImpl implements ArtistService {
         Artist searchedArtist = artistRepository.findById(id).orElseThrow(() -> new RuntimeException("L'Artista ricercato non è presente"));
         searchedArtist.setIdArtistMusicBrainz(artistDTO.getIdArtistMusicBrainz() == null ? searchedArtist.getIdArtistMusicBrainz() : artistDTO.getIdArtistMusicBrainz());
         searchedArtist.setName(artistDTO.getName() == null ? searchedArtist.getName() : artistDTO.getName());
+        searchedArtist.setRelationURLs(artistDTO.getRelationURLs() == null ? searchedArtist.getRelationURLs() : artistDTO.getRelationURLs());
         searchedArtist.setDescription(artistDTO.getDescription() == null ? searchedArtist.getDescription() : artistDTO.getDescription());
         searchedArtist.setGenres(artistDTO.getGenres() == null ? searchedArtist.getGenres() : artistDTO.getGenres());
         searchedArtist.setCountry(artistDTO.getCountry() == null ? searchedArtist.getCountry() : artistDTO.getCountry());
