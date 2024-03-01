@@ -11,7 +11,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/artistaMusicale")
+@RequestMapping("/api/v1/artist")
 public class ArtistController extends AbstractController<ArtistDTO, Integer> {
 
     @Autowired
@@ -47,21 +47,21 @@ public class ArtistController extends AbstractController<ArtistDTO, Integer> {
 
     @PostMapping("/add")
     @Override
-    public ResponseEntity<Void> add(ArtistDTO artistDTO) {
+    public ResponseEntity<Void> add(@RequestParam ArtistDTO artistDTO) {
         artistService.add(artistDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update")
     @Override
-    public ResponseEntity<Void> update(ArtistDTO artistDTO, Integer id) {
+    public ResponseEntity<Void> update(@RequestParam ArtistDTO artistDTO, @RequestParam Integer id) {
         artistService.update(artistDTO, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
     @Override
-    public ResponseEntity<Void> delete(Integer id) {
+    public ResponseEntity<Void> delete(@RequestParam Integer id) {
         artistService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

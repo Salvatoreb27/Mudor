@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface ArtistRepository extends JpaRepository<Artist, Integer>, JpaSpecificationExecutor<Artist> {
 
     Optional<Artist> findByName(String name);
-
     Optional<Artist> findByIdArtistMusicBrainz (String idMusicBrainz);
 
 }

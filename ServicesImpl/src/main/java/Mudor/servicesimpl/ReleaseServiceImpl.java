@@ -10,12 +10,14 @@ import Mudor.repository.ReleaseRepository;
 import Mudor.services.ReleaseService;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -202,11 +204,26 @@ public class ReleaseServiceImpl implements ReleaseService {
         releaseRepository.save(searchedRelease);
     }
 
+    @Transactional
     @Override
     public void delete(Integer id) {
-        if (releaseRepository.existsById(id)) {
-            releaseRepository.deleteById(id);
+            Release release = releaseRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Release not found"));
+
+        // Memorizza gli artisti da rimuovere
+        List<Artist> artistToRemove = new ArrayList<>();
+        for (Artist artist : release.getArtists()) {
+            artistToRemove.add(artist);
         }
+
+        // Rimuovi la Release dagli artisti
+        for (Artist artista : artistToRemove) {
+            artista.getReleases().remove(release);
+            artistRepository.save(artista);
+        }
+
+        // Ora puoi eliminare la Release
+        releaseRepository.delete(release);
     }
 
     private Specification<Release> createkindAndArtistSpecification(String kind, String artistName) {

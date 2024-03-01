@@ -52,21 +52,21 @@ public class ReleaseController extends AbstractController <ReleaseDTO, Integer>{
 
     @PostMapping("/add")
     @Override
-    public ResponseEntity<Void> add(ReleaseDTO releaseDTO) {
+    public ResponseEntity<Void> add(@RequestParam ReleaseDTO releaseDTO) {
         releaseService.add(releaseDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update")
     @Override
-    public ResponseEntity<Void> update(ReleaseDTO releaseDTO, Integer id) {
+    public ResponseEntity<Void> update(@RequestParam ReleaseDTO releaseDTO, @RequestParam Integer id) {
         releaseService.update(releaseDTO, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
     @Override
-    public ResponseEntity<Void> delete(Integer id) {
+    public ResponseEntity<Void> delete(@RequestParam Integer id) {
         releaseService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

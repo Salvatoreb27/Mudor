@@ -103,16 +103,4 @@ public class ReleaseSpecifications {
         };
     }
 
-
-//    public static Specification<Release> findByKindAndArtistsName(String kind, String artistName) {
-//        return (root, query, cb) -> {
-//
-//            root.join("artists");
-//
-//            return cb.and(
-//                    cb.equal(root.get("kind"), kind),
-//                    cb.equal(root.get("artists").get("name"), artistName)
-//            );
-//        };
-//    }
 }

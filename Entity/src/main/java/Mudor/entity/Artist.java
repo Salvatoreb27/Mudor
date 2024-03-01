@@ -38,9 +38,8 @@ public class Artist {
     @Column(name = "country")
     private String country;
 
-    @ManyToMany
-    @JoinTable(
-            name = "artist_release",
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "artist_release",
             joinColumns = @JoinColumn(name = "artist_id"),
             inverseJoinColumns = @JoinColumn(name = "release_id")
     )
