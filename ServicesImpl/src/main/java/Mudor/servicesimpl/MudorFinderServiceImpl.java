@@ -49,7 +49,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         String inputName = name;
 
         try {
-
             Thread.sleep(1000);
 
             String encodedName = URLEncoder.encode(inputName, "UTF-8");
@@ -98,13 +97,12 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     }
 
 
-    public Object searchSingerPageMusicBrainz(String name) {
+    public String searchSingerPageMusicBrainz(String name) {
         String artistJson = null;
         try {
 
 
             String artistId = String.valueOf(getSingerIdMusicBrainz(name));
-
             String artistUrl = "http://musicbrainz.org/ws/2/artist/" + artistId + "?inc=url-rels+release-groups+genres&fmt=json";
 
             Thread.sleep(1000);
@@ -118,14 +116,11 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     }
 
 
-    public Object searchAlbumInStudioPageMusicBrainz(String name) {
+    public String searchAlbumInStudioPageMusicBrainz(String name) {
 
         String albumsJson = null;
 
         try {
-
-
-
             RestTemplate restTemplate = new RestTemplate();
             String artistId = String.valueOf(getSingerIdMusicBrainz(name));
             Thread.sleep(1000);
@@ -236,7 +231,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         return "EP".equals(releaseGroup.get("primary-type").asText());
     }
 
-    public Object extractAlbumTitlesMusicBrainz(String name) {
+    public List<String> extractAlbumTitlesMusicBrainz(String name) {
 
         List<String> albumList = new ArrayList<>();
 
@@ -263,9 +258,29 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         return albumList;
     }
+    public String getOneReleaseGroupInfo(String title, String artistName) {
 
+        String idMusicBrainz = null;
 
-    public List<String> getReleaseGroupInfoMusicBrainz(String name) {
+        Release artistReleaseGroup = releaseService.getReleaseByTitleAndArtistName(title, artistName);
+            idMusicBrainz = artistReleaseGroup.getIdReleaseGroupMusicBrainz();
+
+            String jsonResponse = null;
+
+            try {
+                Thread.sleep(1000);
+
+                RestTemplate restTemplate = new RestTemplate();
+                 jsonResponse = restTemplate.getForObject("https://musicbrainz.org/ws/2/release-group/" + idMusicBrainz + "?inc=releases&fmt=json", String.class);
+
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+
+        return jsonResponse;
+    }
+
+    public List<String> getAllReleaseGroupsInfo(String name) {
 
         String idMusicBrainz = null;
 
@@ -296,15 +311,56 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         return releasesJsonResponses;
     }
 
+
     @Transactional
-    public List<String> getAlbumReleasesOfReleaseGroup(String name) {
+    public String getOneFirstReleaseOfAReleaseGroupOfAnArtist(String title, String artistName) {
+
+        String jsonResponse;
+        String firstReleaseOfAReleaseGroup = null;
+
+        try {
+
+            jsonResponse = getOneReleaseGroupInfo(title, artistName);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(jsonResponse);
+                String idReleaseGroupMusicBrainz = jsonNode.get("id").asText();
+
+                JSONObject jsonObject = new JSONObject(jsonResponse);
+                JSONArray releasesArray = jsonObject.getJSONArray("releases");
+
+                if (releasesArray.length() > 0) {
+
+                    JSONObject firstRelease = releasesArray.getJSONObject(0);
+                    String firstReleaseId = firstRelease.getString("id");
+                    firstReleaseOfAReleaseGroup = firstReleaseId;
+
+                    Release release = releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz);
+                    release.setIdReleaseMusicBrainz(firstReleaseId);
+                    releaseService.updateByEntity(release, release.getIdRelease());
+                }
+
+        } catch (JSONException jsonException) {
+            jsonException.printStackTrace();
+
+        } catch (JsonMappingException jsonMappingException) {
+            jsonMappingException.printStackTrace();
+
+        } catch (JsonProcessingException jsonProcessingException) {
+            jsonProcessingException.printStackTrace();
+
+        }
+        return firstReleaseOfAReleaseGroup;
+    }
+    @Transactional
+    public List<String> getAllFirstReleasesOfAllReleaseGroupsOfAnArtist(String name) {
 
         List<String> jsonResponses;
         List<String> firstReleasesOfAllAlbums = new ArrayList<>();
 
         try {
 
-            jsonResponses = getReleaseGroupInfoMusicBrainz(name);
+            jsonResponses = getAllReleaseGroupsInfo(name);
 
             for (String jsonResponse : jsonResponses) {
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -341,6 +397,183 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         return firstReleasesOfAllAlbums;
     }
 
+    public ResponseEntity<String> releaseConstruct (String releaseName, String artistName) {
+
+        try {
+            String singerPageJson = String.valueOf(searchSingerPageMusicBrainz(artistName));
+            ObjectMapper artistMapper = new ObjectMapper();
+            JsonNode rootNode = artistMapper.readTree(singerPageJson);
+
+            String idMusicBrainz = rootNode.get("id").asText();
+            String name = rootNode.get("name").asText();
+            String country = rootNode.get("area").get("name").asText();
+            String disambiguation = rootNode.get("disambiguation").asText();
+
+            List<String> relationUrls = new ArrayList<>();
+            JsonNode relationsNode = rootNode.path("relations");
+            for (JsonNode relationNode : relationsNode) {
+                JsonNode urlNode = relationNode.path("url");
+                String resource = urlNode.path("resource").asText();
+                relationUrls.add(resource);
+            }
+
+            JsonNode genresNode = rootNode.get("genres");
+            List<String> genresOfArtist = new ArrayList<>();
+            for (JsonNode genereNode : genresNode) {
+                String genre = genereNode.get("name").asText();
+                genresOfArtist.add(genre);
+            }
+
+            List<Artist> artistList = new ArrayList<>();
+            List<ReleaseDTO> releaseDTOFakeList = new ArrayList<>();
+            ArtistDTO artistDTO = ArtistDTO.builder()
+                    .idArtistMusicBrainz(idMusicBrainz)
+                    .name(name)
+                    .relationURLs(relationUrls)
+                    .genres(genresOfArtist)
+                    .description(disambiguation)
+                    .releaseDTOList(releaseDTOFakeList)
+                    .country(country)
+                    .build();
+            Artist artistSaved;
+            Artist artistUpdated;
+            if (artistService.getArtistByIdMusicBrainz(idMusicBrainz) != null) {
+                Integer id = artistService.getArtistByIdMusicBrainz(idMusicBrainz).getIdArtist();
+                artistUpdated = artistService.update(artistDTO, id);
+                artistList.add(artistUpdated);
+            } else {
+                artistSaved = artistService.add(artistDTO);
+                artistList.add(artistSaved);
+            }
+
+            ObjectMapper releaseMapper = new ObjectMapper();
+            JsonNode jsonNode = releaseMapper.readTree(singerPageJson);
+            JsonNode releaseGroups = jsonNode.get("release-groups");
+
+            Release releaseToAdd = new Release();
+
+            for (JsonNode releaseGroup : releaseGroups) {
+                if (releaseGroup.get("title").asText().equalsIgnoreCase(releaseName)) {
+                    String kind = "";
+                    String albumTitle = releaseGroup.get("title").asText();
+                    String releaseDate = releaseGroup.get("first-release-date").asText();
+                    String idReleaseGroupMusicBrainz = releaseGroup.get("id").asText();
+
+                    if (isCompilationAlbum(releaseGroup)) {
+                        kind = "Compilation";
+                    } else if (isLiveAlbum(releaseGroup)) {
+                        kind = "Live";
+                    } else if (isSingleAlbum(releaseGroup)) {
+                        kind = "Single";
+                    } else if (isDemoAlbum(releaseGroup)) {
+                        kind = "Demo";
+                    } else if (isEPAlbum(releaseGroup)) {
+                        kind = "EP";
+                    } else if (isAlbum(releaseGroup)) {
+                        kind = "Album";
+                    } else if (isRemixAlbum(releaseGroup)) {
+                        kind = "Remix";
+                    }
+                    List<String> genresList = new ArrayList<>();
+
+                    JsonNode genres = releaseGroup.get("genres");
+                    for (JsonNode genre : genres) {
+                        String genreName = genre.get("name").asText();
+                        genresList.add(genreName);
+                        System.out.println("Genre: " + genreName);
+                    }
+
+                    List<String> tracksFakeList = new ArrayList<>();
+                    List<ArtistDTO> artistDTOFakeList = new ArrayList<>();
+
+                    ReleaseDTO releaseDTO = ReleaseDTO.builder()
+                            .title(albumTitle)
+                            .idReleaseGroupMusicBrainz(idReleaseGroupMusicBrainz)
+                            .dateOfRelease(releaseDate)
+                            .coverArt("")
+                            .tracks(tracksFakeList)
+                            .kind(kind)
+                            .genres(genresList)
+                            .artistDTOList(artistDTOFakeList)
+                            .build();
+
+                    Release releaseSaved;
+
+                    if (releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz) != null) {
+                        Integer id = releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz).getIdRelease();
+                        releaseService.update(releaseDTO, id);
+
+                    } else {
+                        releaseSaved = releaseService.add(releaseDTO);
+                        releaseToAdd = releaseSaved;
+                    }
+                    releaseToAdd.setArtists(artistList);
+                    releaseService.updateByEntity(releaseToAdd, releaseToAdd.getIdRelease());
+
+
+                    for (Artist artist : artistList) {
+                        artist.getReleases().add(releaseToAdd);
+                        artistService.updateByEntity(artist, artist.getIdArtist());
+                    }
+                }
+
+
+            }
+            constructTracksForOneRelease(releaseName, artistName);
+            constructCoverArtForOneRelease(releaseName, artistName);
+
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok("Release " + releaseName + " dell'artista " + artistName + " aggiunta correttamente");
+    }
+
+    public void constructTracksForOneRelease(String title, String artistName) {
+
+        try {
+            Release release = releaseService.getReleaseByTitleAndArtistName(title, artistName);
+
+            String releaseId = getOneFirstReleaseOfAReleaseGroupOfAnArtist(title, artistName);
+
+
+                Thread.sleep(1000);
+                RestTemplate restTemplate = new RestTemplate();
+                String jsonResponse = restTemplate.getForObject("https://musicbrainz.org/ws/2/release/" + releaseId + "?inc=recordings&fmt=json", String.class);
+
+                List<String> trackTitles = getTrackTitles(jsonResponse);
+
+                    if (release.getIdReleaseMusicBrainz().equals(releaseId)) {
+                        if (release.getTracks().size() != trackTitles.size()) {
+                            release.setTracks(trackTitles);
+                            releaseService.updateByEntity(release, release.getIdRelease());
+                        }
+                    }
+
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void constructCoverArtForOneRelease(String title, String artistName) {
+
+        Release release = releaseService.getReleaseByTitleAndArtistName(title, artistName);
+
+        String releaseId = getOneFirstReleaseOfAReleaseGroupOfAnArtist(title, artistName);
+
+            String imageUrl = "https://coverartarchive.org/release/" + releaseId + "/front";
+
+                if (release.getIdReleaseMusicBrainz().equals(releaseId)) {
+                    if (release.getCoverArt().isEmpty()) {
+                        release.setCoverArt(imageUrl);
+                        releaseService.updateByEntity(release, release.getIdRelease());
+                    }
+                }
+
+    }
 
     @Transactional
     public ResponseEntity<String> mudorConstruct(String name) {
@@ -370,6 +603,10 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                 String genre = genereNode.get("name").asText();
                 genresOfArtist.add(genre);
             }
+
+
+
+
             List<Artist> artistList = new ArrayList<>();
             List<ReleaseDTO> releaseDTOFakeList = new ArrayList<>();
             ArtistDTO artistDTO = ArtistDTO.builder()
@@ -392,6 +629,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                 artistSaved = artistService.add(artistDTO);
                 artistList.add(artistSaved);
             }
+
 
             ObjectMapper releaseMapper = new ObjectMapper();
             JsonNode jsonNode = releaseMapper.readTree(singerPageJson);
@@ -486,7 +724,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         try {
             List<Release> albumReleaseByArtist = releaseService.getReleasesByArtistName(name);
 
-            List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
+            List<String> releasesIds = getAllFirstReleasesOfAllReleaseGroupsOfAnArtist(name);
 
 
             for (String releaseId : releasesIds) {
@@ -540,8 +778,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
             List<Release> albumReleaseByArtist = releaseService.getReleasesByArtistName(name);
 
-            List<String> releasesIds = getAlbumReleasesOfReleaseGroup(name);
-
+            List<String> releasesIds = getAllFirstReleasesOfAllReleaseGroupsOfAnArtist(name);
 
             for (String releaseId : releasesIds) {
 

@@ -17,7 +17,9 @@ public interface ReleaseRepository extends JpaRepository<Release, Integer>, JpaS
     Optional<Release> findByTitle(String title);
     List <Release> findByKindAndArtistsName (String kind, String artistName);
     List<Release> findByKind (String kind);
-    List<Release> findByArtistsName(String artistName);
+
+    Release findReleaseByTitleAndArtistsName (String title, String artistname);
+    List<Release> findReleasesByArtistsName(String artistName);
 
     Optional<Release> findByIdReleaseGroupMusicBrainz(String idMusicBrainz);
 }

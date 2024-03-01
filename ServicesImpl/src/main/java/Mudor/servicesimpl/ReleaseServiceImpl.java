@@ -125,16 +125,15 @@ public class ReleaseServiceImpl implements ReleaseService {
     }
 
     public List<Release> getReleasesByArtistName(String artistName) {
-        return releaseRepository.findByArtistsName(artistName);
+        return releaseRepository.findReleasesByArtistsName(artistName);
     }
 
-//    @Override
-//    public List<Release> getReleasesByKindAndArtistsName(String kind, String artistName) {
-//        return releaseRepository.findByKindAndArtistsName(kind, artistName);
-//    }
+    public Release getReleaseByTitleAndArtistName(String title, String artistName) {
+        return releaseRepository.findReleaseByTitleAndArtistsName(title, artistName);
+    }
 
     @Override
-    public List<Release> findReleasesByKind(String kind) {
+    public List<Release> getReleasesByKind(String kind) {
         return releaseRepository.findByKind(kind);
     }
 
@@ -166,14 +165,6 @@ public class ReleaseServiceImpl implements ReleaseService {
         }
     }
 
-//    @Override
-//    public Optional<List<Release>> getReleasesByArtist(String name) {
-//        List<Artist> artists = new ArrayList<>();
-//        Artist artist = new Artist();
-//        artist.setName(name);
-//        artists.add(artist);
-//     return releaseRepository.findByArtists(artists);
-//    }
 
     @Override
     public Release add(ReleaseDTO releaseDTO) {

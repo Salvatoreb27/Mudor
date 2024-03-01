@@ -43,11 +43,15 @@ public class MudorController {
     public Object getListOfAlbumsInStudioOfArtistM(@RequestParam String name) {
         return mudorFinderServiceImpl.extractAlbumTitlesMusicBrainz(name);
     }
-
+    @GetMapping("/releaseConstruct")
+    public ResponseEntity<String> releaseConstruct(@RequestParam String title, @RequestParam String artistName) {
+        return mudorFinderServiceImpl.releaseConstruct(title, artistName);
+    }
     @GetMapping("/mudorConstruct")
     public ResponseEntity<String> mudorConstruct(@RequestParam String name) {
        return mudorFinderServiceImpl.mudorConstruct(name);
     }
+
 
     @GetMapping("/constructTracksForAlbumsOfArtist")
     public void constructTracksForAlbumsOfArtist(@RequestParam String name) {

@@ -11,8 +11,9 @@ import java.util.Optional;
 public interface ReleaseService extends MapAndCRUDService<ReleaseDTO, Release, Integer>{
 
     List<Release> getReleasesByKindAndArtistsName (String kind, String artistName);
-    List<Release> findReleasesByKind (String kind);
+    List<Release> getReleasesByKind (String kind);
     Release getReleaseGroupByIdMusicBrainz (String idMusicBrainz);
+    Release getReleaseByTitleAndArtistName(String title, String artistName);
     List<Release> getReleasesByArtistName(String artistName);
     void updateByEntity(Release release, Integer id);
     List<Release> getAll();
