@@ -522,12 +522,15 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             constructTracksForOneRelease(releaseName, artistName);
             constructCoverArtForOneRelease(releaseName, artistName);
 
-        } catch (JsonMappingException e) {
-            throw new RuntimeException(e);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (JsonMappingException jsonMappingException) {
+            jsonMappingException.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error while mapping JSON");
+
+        } catch (JsonProcessingException jsonProcessingException) {
+            jsonProcessingException.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error while processing JSON");
         }
-        return ResponseEntity.ok("Release " + releaseName + " dell'artista " + artistName + " aggiunta correttamente");
+        return ResponseEntity.ok("Release --> " + releaseName + " of artist --> " + artistName + " correctly drained and added!");
     }
 
     public void constructTracksForOneRelease(String title, String artistName) {
@@ -709,14 +712,16 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             constructTracksForArtist(name);
             constructCoverArtForArtist(name);
 
-        } catch (JsonMappingException e) {
-            throw new RuntimeException(e);
+        } catch (JsonMappingException jsonMappingException) {
+            jsonMappingException.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error while mapping JSON");
 
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            jsonProcessingException.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error while processing JSON");
 
         }
-        return ResponseEntity.ok("Discografia dell'artista " + name + " aggiunta correttamente");
+        return ResponseEntity.ok("Discography of artist -->" + name + " correctly drained and added!");
     }
 
     public void constructTracksForArtist(String name) {
@@ -743,8 +748,8 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     }
                 }
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
         }
 
 

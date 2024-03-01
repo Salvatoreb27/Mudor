@@ -187,7 +187,18 @@ public class ReleaseServiceImpl implements ReleaseService {
         searchedRelease.setTracks(releaseDTO.getTracks() == null ? searchedRelease.getTracks() : releaseDTO.getTracks());
         searchedRelease.setGenres(releaseDTO.getGenres() == null ? searchedRelease.getGenres() : releaseDTO.getGenres());
         searchedRelease.setArtists(artistList == null ? searchedRelease.getArtists() : artistList);
-        return releaseRepository.save(searchedRelease);
+
+        Release releaseSaved = releaseRepository.save(searchedRelease);
+
+        for (Artist artist : releaseSaved.getArtists()) {
+            for (Release artistRelease : artist.getReleases()) {
+                if (artistRelease.getIdRelease().equals(searchedRelease.getIdRelease())) {
+                    artist.getReleases().remove(artistRelease);
+                    artist.getReleases().add(releaseSaved);
+                }
+            }
+        }
+        return releaseSaved;
     }
 
     public void updateByEntity(Release release, Integer id) {
@@ -203,7 +214,6 @@ public class ReleaseServiceImpl implements ReleaseService {
         searchedRelease.setArtists(release.getArtists() == null ? searchedRelease.getArtists() : release.getArtists());
         releaseRepository.save(searchedRelease);
     }
-
     @Transactional
     @Override
     public void delete(Integer id) {
