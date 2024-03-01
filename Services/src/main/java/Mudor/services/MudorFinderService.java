@@ -18,21 +18,21 @@ public interface MudorFinderService {
      * @param name il nome dell'artista
      * @return un json contenente i risultati della ricerca dell'artista.
      */
-    String searchSingerMusicBrainz(String name);
+    String searchArtistMusicBrainz(String name);
     /**
      * Ricerca l'id (quello di MusicBrainz) di un artista tramite API MusicBrainz.
      *
      * @param name il nome dell'artista
      * @return l'id (quello di MusicBrainz) dell'artista
      */
-    String getSingerIdMusicBrainz(String name);
+    String getArtistIdMusicBrainz(String name);
     /**
      * Ricerca la pagina contenente informazioni su un artista tramite API MusicBrainz.
      *
      * @param name il nome dell'artista associato agli album in studio
      * @return un json riferito alla pagina che identifica l'artista.
      */
-    String searchSingerPageMusicBrainz(String name);
+    String searchArtistPageMusicBrainz(String name);
     /**
      * Ricerca la pagina contenente informazioni sugli album in studio di un artista tramite API MusicBrainz.
      *

@@ -49,21 +49,21 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     ArtistService artistService;
 
     /**
-     * Cerca un cantante su MusicBrainz utilizzando il nome specificato.
+     * Cerca un Artista su MusicBrainz utilizzando il nome specificato.
      *
-     * @param name il nome del cantante da cercare su MusicBrainz
+     * @param name il nome dell'Artista da cercare su MusicBrainz
      * @return una stringa JSON contenente i risultati della ricerca
-     * oppure un messaggio di errore se il cantante non viene trovato
+     * oppure un messaggio di errore se l'artista non viene trovato
      * o se si verifica un errore durante la ricerca
      */
-    public String searchSingerMusicBrainz(String name) {
+    public String searchArtistMusicBrainz(String name) {
         String inputName = name;
 
         try {
             // Attende per un secondo prima di effettuare la ricerca
             Thread.sleep(1000);
 
-            // Codifica il nome del cantante in UTF-8 per l'URL
+            // Codifica il nome dell'artista in UTF-8 per l'URL
             String encodedName = URLEncoder.encode(inputName, "UTF-8");
 
             // Costruisce l'URL di ricerca su MusicBrainz
@@ -85,25 +85,25 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
 
     /**
-     * Ottiene l'ID MusicBrainz di un cantante utilizzando il nome specificato.
+     * Ottiene l'ID MusicBrainz di un Artista utilizzando il nome specificato.
      *
-     * @param name il nome del cantante di cui ottenere l'ID MusicBrainz
-     * @return l'ID MusicBrainz del cantante, se trovato; altrimenti, restituisce null
+     * @param name il nome dell'artista di cui ottenere l'ID MusicBrainz
+     * @return l'ID MusicBrainz dell'Artista, se trovato; altrimenti, restituisce null
      * oppure un messaggio di errore se si verifica un problema durante la ricerca
      */
-    public String getSingerIdMusicBrainz(String name) {
+    public String getArtistIdMusicBrainz(String name) {
         String artistId = null;
 
         try {
-            // Ottiene la stringa JSON dei risultati della ricerca del cantante
-            String artistJson = String.valueOf(searchSingerMusicBrainz(name));
+            // Ottiene la stringa JSON dei risultati della ricerca dell'artista
+            String artistJson = String.valueOf(searchArtistMusicBrainz(name));
 
-            // Parsa la stringa JSON per ottenere l'ID del cantante
+            // Parsa la stringa JSON per ottenere l'ID dell'artista
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(artistJson);
             JsonNode artistsNode = rootNode.path("artists");
 
-            // Se esiste almeno un cantante nei risultati, ottiene l'ID del primo cantante
+            // Se esiste almeno un artista nei risultati, ottiene l'ID del primo artista
             if (artistsNode.isArray() && artistsNode.size() > 0) {
                 JsonNode artistNode = artistsNode.get(0);
                 artistId = artistNode.path("id").asText();
@@ -118,25 +118,25 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
 
     /**
-     * Cerca la pagina MusicBrainz di un cantante utilizzando il nome specificato.
+     * Cerca la pagina MusicBrainz di un Artista utilizzando il nome specificato.
      *
-     * @param name il nome del cantante di cui cercare la pagina MusicBrainz
-     * @return una stringa JSON contenente le informazioni sulla pagina del cantante, se trovata;
+     * @param name il nome dell' Artista di cui cercare la pagina MusicBrainz
+     * @return una stringa JSON contenente le informazioni sulla pagina dell' Artista, se trovata;
      * altrimenti, restituisce null oppure un messaggio di errore se si verifica un problema durante la ricerca
      */
-    public String searchSingerPageMusicBrainz(String name) {
+    public String searchArtistPageMusicBrainz(String name) {
         String artistJson = null;
         try {
-            // Ottiene l'ID MusicBrainz del cantante utilizzando il nome specificato
-            String artistId = String.valueOf(getSingerIdMusicBrainz(name));
+            // Ottiene l'ID MusicBrainz dell'artista utilizzando il nome specificato
+            String artistId = String.valueOf(getArtistIdMusicBrainz(name));
 
-            // Costruisce l'URL per la pagina MusicBrainz del cantante utilizzando l'ID ottenuto
+            // Costruisce l'URL per la pagina MusicBrainz dell'artista utilizzando l'ID ottenuto
             String artistUrl = "http://musicbrainz.org/ws/2/artist/" + artistId + "?inc=url-rels+release-groups+genres&fmt=json";
 
             // Attendere per un secondo per evitare sovraccarichi sulla richiesta HTTP
             Thread.sleep(1000);
 
-            // Effettua una richiesta HTTP per ottenere la stringa JSON della pagina del cantante
+            // Effettua una richiesta HTTP per ottenere la stringa JSON della pagina dell'artista
             RestTemplate restTemplate = new RestTemplate();
             artistJson = restTemplate.getForObject(artistUrl, String.class);
 
@@ -159,7 +159,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         try {
             // Ottiene l'ID MusicBrainz dell'artista utilizzando il nome specificato
             RestTemplate restTemplate = new RestTemplate();
-            String artistId = String.valueOf(getSingerIdMusicBrainz(name));
+            String artistId = String.valueOf(getArtistIdMusicBrainz(name));
 
             // Attendere per un secondo per evitare sovraccarichi sulla richiesta HTTP
             Thread.sleep(1000);
@@ -329,14 +329,14 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         try {
             // Ottiene il JSON della pagina dell'artista dal database MusicBrainz
-            String singerPageJson = String.valueOf(searchSingerPageMusicBrainz(name));
+            String singerPageJson = String.valueOf(searchArtistPageMusicBrainz(name));
 
             // Analizza il JSON per estrarre i titoli degli album
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(singerPageJson);
             JsonNode releaseGroups = jsonNode.get("release-groups");
 
-            // Itera su ciascun gruppo di rilascio per estrarre i titoli degli album e le relative date di rilascio
+            // Itera su ciascun release-group per estrarre i titoli degli album e le relative date di rilascio
             for (JsonNode releaseGroup : releaseGroups) {
                 String albumTitle = releaseGroup.get("title").asText();
                 String releaseDate = releaseGroup.get("first-release-date").asText();
@@ -354,16 +354,16 @@ public class MudorFinderServiceImpl implements MudorFinderService {
     }
 
     /**
-     * Ottiene le informazioni su un gruppo di rilascio specifico da MusicBrainz.
+     * Ottiene le informazioni su un release-group specifico da MusicBrainz.
      *
-     * @param title      il titolo del gruppo di rilascio
-     * @param artistName il nome dell'artista associato al gruppo di rilascio
-     * @return una stringa JSON contenente le informazioni sul gruppo di rilascio specificato
+     * @param title      il titolo del release-group
+     * @param artistName il nome dell'artista associato al release-group
+     * @return una stringa JSON contenente le informazioni sul release-group specificato
      */
     public String getOneReleaseGroupInfo(String title, String artistName) {
         String idMusicBrainz = null;
 
-        // Ottiene il gruppo di rilascio associato al titolo e all'artista specificati
+        // Ottiene il release-group associato al titolo e all'artista specificati
         Release artistReleaseGroup = releaseService.getReleaseByTitleAndArtistName(title, artistName);
         idMusicBrainz = artistReleaseGroup.getIdReleaseGroupMusicBrainz();
 
@@ -373,7 +373,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             // Introduce un ritardo di 1 secondo per evitare il sovraccarico del server
             Thread.sleep(1000);
 
-            // Effettua una richiesta REST per ottenere le informazioni sul gruppo di rilascio da MusicBrainz
+            // Effettua una richiesta REST per ottenere le informazioni sul release-group da MusicBrainz
             RestTemplate restTemplate = new RestTemplate();
             jsonResponse = restTemplate.getForObject("https://musicbrainz.org/ws/2/release-group/" + idMusicBrainz + "?inc=releases&fmt=json", String.class);
 
@@ -407,10 +407,10 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             idMusicBrainzList.add(idMusicBrainz);
         }
 
-        // Lista per memorizzare le risposte JSON ottenute per ciascun gruppo di rilascio
+        // Lista per memorizzare le risposte JSON ottenute per ciascun release-group
         List<String> releasesJsonResponses = new ArrayList<>();
 
-        // Ottiene le informazioni per ciascun gruppo di rilascio tramite le richieste REST a MusicBrainz
+        // Ottiene le informazioni per ciascun release-group tramite le richieste REST a MusicBrainz
         for (String id : idMusicBrainzList) {
             try {
                 // Introduce un ritardo di 1 secondo per evitare il sovraccarico del server
@@ -432,9 +432,9 @@ public class MudorFinderServiceImpl implements MudorFinderService {
      * Ottiene la prima versione rilasciata della release associata a un determinato titolo e nome dell'artista da MusicBrainz.
      * Aggiorna anche il rilascio nel database con l'ID del primo rilascio ottenuto.
      *
-     * @param title      il titolo del gruppo di rilascio
-     * @param artistName il nome dell'artista associato al gruppo di rilascio
-     * @return l'ID del primo rilascio del gruppo di rilascio, se presente; altrimenti, null
+     * @param title      il titolo del release-group
+     * @param artistName il nome dell'artista associato al release-group
+     * @return l'ID del primo rilascio del release-group, se presente; altrimenti, null
      */
     @Transactional
     public String getOneFirstReleaseOfAReleaseGroupOfAnArtist(String title, String artistName) {
@@ -443,13 +443,13 @@ public class MudorFinderServiceImpl implements MudorFinderService {
         String firstReleaseOfAReleaseGroup = null;
 
         try {
-            // Ottiene le informazioni sul gruppo di rilascio
+            // Ottiene le informazioni sul release-group
             jsonResponse = getOneReleaseGroupInfo(title, artistName);
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
 
-            // Ottiene l'ID del gruppo di rilascio dal JSON ottenuto
+            // Ottiene l'ID del release-group dal JSON ottenuto
             String idReleaseGroupMusicBrainz = jsonNode.get("id").asText();
 
             // Converti la stringa JSON in un oggetto JSONObject
@@ -458,7 +458,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             // Ottiene l'array di rilasci dal JSON
             JSONArray releasesArray = jsonObject.getJSONArray("releases");
 
-            // Verifica se ci sono rilasci nel gruppo di rilascio
+            // Verifica se ci sono rilasci nel release-group
             if (releasesArray.length() > 0) {
                 // Ottiene il primo rilascio dall'array
                 JSONObject firstRelease = releasesArray.getJSONObject(0);
@@ -467,9 +467,9 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                 // Imposta l'ID del primo rilascio come valore di ritorno
                 firstReleaseOfAReleaseGroup = firstReleaseId;
 
-                // Ottiene il gruppo di rilascio dal repository
+                // Ottiene il release-group dal repository
                 Release release = releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz);
-                // Aggiorna l'ID del primo rilascio nel gruppo di rilascio nel database
+                // Aggiorna l'ID del primo rilascio nel release-group nel database
                 release.setIdReleaseMusicBrainz(firstReleaseId);
                 releaseService.updateByEntity(release, release.getIdRelease());
             }
@@ -504,7 +504,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
             // Ottiene le informazioni su tutti i gruppi di rilascio dell'artista
             jsonResponses = getAllReleaseGroupsInfo(name);
 
-            // Itera su ciascuna risposta JSON per ottenere il primo rilascio di ogni gruppo di rilascio
+            // Itera su ciascuna risposta JSON per ottenere il primo rilascio di ogni release-group
             for (String jsonResponse : jsonResponses) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(jsonResponse);
@@ -513,7 +513,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                 JSONObject jsonObject = new JSONObject(jsonResponse);
                 JSONArray releasesArray = jsonObject.getJSONArray("releases");
 
-                // Verifica se ci sono rilasci nel gruppo di rilascio
+                // Verifica se ci sono rilasci nel release-group
                 if (releasesArray.length() > 0) {
                     // Ottiene il primo rilascio dall'array
                     JSONObject firstRelease = releasesArray.getJSONObject(0);
@@ -522,9 +522,9 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     // Aggiunge l'ID del primo rilascio alla lista dei primi rilasci di tutti i gruppi di rilascio
                     firstReleasesOfAllAlbums.add(firstReleaseId);
 
-                    // Ottiene il gruppo di rilascio dal repository
+                    // Ottiene il release-group dal repository
                     Release release = releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz);
-                    // Aggiorna l'ID del primo rilascio nel gruppo di rilascio nel database
+                    // Aggiorna l'ID del primo rilascio nel release-group nel database
                     release.setIdReleaseMusicBrainz(firstReleaseId);
                     releaseService.updateByEntity(release, release.getIdRelease());
                 }
@@ -555,7 +555,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         try {
             // Ottiene le informazioni sull'artista dalla pagina MusicBrainz
-            String singerPageJson = String.valueOf(searchSingerPageMusicBrainz(artistName));
+            String singerPageJson = String.valueOf(searchArtistPageMusicBrainz(artistName));
 
             // Mappa le informazioni sull'artista dalla risposta JSON
             ObjectMapper artistMapper = new ObjectMapper();
@@ -797,7 +797,7 @@ public class MudorFinderServiceImpl implements MudorFinderService {
 
         try {
             // Ottiene le informazioni sull'artista dal servizio MusicBrainz
-            String singerPageJson = String.valueOf(searchSingerPageMusicBrainz(name));
+            String singerPageJson = String.valueOf(searchArtistPageMusicBrainz(name));
             ObjectMapper artistMapper = new ObjectMapper();
             JsonNode rootNode = artistMapper.readTree(singerPageJson);
 

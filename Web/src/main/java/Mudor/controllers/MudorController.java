@@ -29,7 +29,7 @@ public class MudorController {
      */
     @GetMapping("/searchSingerM")
     public Object searchSingerM(@RequestParam String name) {
-        return mudorFinderServiceImpl.searchSingerMusicBrainz(name);
+        return mudorFinderServiceImpl.searchArtistMusicBrainz(name);
     }
 
     /**
@@ -40,7 +40,7 @@ public class MudorController {
      */
     @GetMapping("/getPageIdOfSingerM")
     public Object getPageIdOfSingerM(@RequestParam String name) {
-        return mudorFinderServiceImpl.getSingerIdMusicBrainz(name);
+        return mudorFinderServiceImpl.getArtistIdMusicBrainz(name);
     }
 
 
@@ -52,7 +52,7 @@ public class MudorController {
      */
     @GetMapping("/searchSingerPageM")
     public Object getPageSingerM(@RequestParam String name) {
-        return mudorFinderServiceImpl.searchSingerPageMusicBrainz(name);
+        return mudorFinderServiceImpl.searchArtistPageMusicBrainz(name);
     }
 
 
