@@ -596,11 +596,12 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     .releaseDTOList(releaseDTOFakeList)
                     .country(country)
                     .build();
+
             Artist artistSaved;
             Artist artistUpdated;
+            //Se l'artista esiste allora dobbiamo paragonare i dati che abbiamo ottenuto con quelli già presenti sull'artista
             if (artistService.getArtistByIdMusicBrainz(idMusicBrainz) != null) {
-                Integer id = artistService.getArtistByIdMusicBrainz(idMusicBrainz).getIdArtist();
-                artistUpdated = artistService.update(artistDTO, id);
+                artistUpdated = artistService.getArtistByIdMusicBrainz(idMusicBrainz);
                 artistList.add(artistUpdated);
             } else {
                 artistSaved = artistService.add(artistDTO);
@@ -673,16 +674,18 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                     } else {
                         releaseSaved = releaseService.add(releaseDTO);
                         releaseToAdd = releaseSaved;
-                    }
-                    // Associa la release all'artista nel database
-                    releaseToAdd.setArtists(artistList);
-                    releaseService.updateByEntity(releaseToAdd, releaseToAdd.getIdRelease());
+
+                        // Associa la release all'artista nel database
+                        releaseToAdd.setArtists(artistList);
+                        releaseService.updateByEntity(releaseToAdd, releaseToAdd.getIdRelease());
 
 
-                    for (Artist artist : artistList) {
-                        artist.getReleases().add(releaseToAdd);
-                        artistService.updateByEntity(artist, artist.getIdArtist());
+                        for (Artist artist : artistList) {
+                            artist.getReleases().add(releaseToAdd);
+                            artistService.updateByEntity(artist, artist.getIdArtist());
+                        }
                     }
+
                 }
 
 
@@ -892,7 +895,6 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                 for (JsonNode genre : genres) {
                     String genreName = genre.get("name").asText();
                     genresList.add(genreName);
-                    System.out.println("Genre: " + genreName);
                 }
 
                 List<String> tracksFakeList = new ArrayList<>();
@@ -911,11 +913,14 @@ public class MudorFinderServiceImpl implements MudorFinderService {
                         .build();
 
                 Release releaseSaved;
+                Release releaseUpdated;
 
                 // Verifica se la release esiste già nel database
                 if (releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz) != null) {
                     Integer id = releaseService.getReleaseGroupByIdMusicBrainz(idReleaseGroupMusicBrainz).getIdRelease();
-                    releaseService.update(releaseDTO, id);
+                    releaseUpdated = releaseService.update(releaseDTO, id);
+                    releaseList.add(releaseUpdated);
+
 
                 } else {
                     releaseSaved = releaseService.add(releaseDTO);

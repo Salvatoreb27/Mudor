@@ -67,7 +67,7 @@ public class Artist {
     /**
      * Lista delle release associate all'artista.
      */
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "artist_release",
             joinColumns = @JoinColumn(name = "artist_id"),
             inverseJoinColumns = @JoinColumn(name = "release_id")
